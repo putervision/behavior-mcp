@@ -1,0 +1,42 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "name": "behavior-runtime-mcp",
+  "title": "Behavior Runtime MCP",
+  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety.",
+  "maintainers": [
+    "putervision"
+  ],
+  "author": "PuterVision",
+  "license": "MIT",
+  "homepage": "https://putervision.com",
+  "repository": "https://github.com/putervision/behavior-runtime-mcp",
+  "categories": [
+    "developer-tools",
+    "ai-agents",
+    "behavior-trees",
+    "automation"
+  ],
+  "tags": [
+    "mcp",
+    "model-context-protocol",
+    "behavior-tree",
+    "60hz",
+    "in-browser-execution",
+    "playwright",
+    "game-ai",
+    "sqlite",
+    "cursor",
+    "claude-code"
+  ],
+  "keywords": [
+    "behavior-tree",
+    "runtime",
+    "60hz",
+    "browser-automation",
+    "triggers",
+    "action-replay",
+    "putervision",
+    "ai-agents",
+    "mcp"
+  ]
+}

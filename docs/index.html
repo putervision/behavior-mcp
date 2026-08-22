@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Behavior Runtime MCP — ~60Hz In-Browser Behavior Tree Execution Engine</title>
+  <meta name="description" content="High-frequency in-browser behavior tree execution engine for autonomous AI agents — 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.">
+  <meta name="keywords" content="mcp, model-context-protocol, behavior-tree, 60hz, in-browser-execution, playwright, game-ai, putervision, sqlite">
+  <meta property="og:title" content="Behavior Runtime MCP — PuterVision">
+  <meta property="og:description" content="In-browser ~60Hz behavior tree execution engine for autonomous AI agents.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "behavior-runtime-mcp",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Cross-platform",
+    "offers": { "@type": "Offer", "price": "0" },
+    "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety."
+  }
+  </script>
+</head>
+<body>
+  <div class="glow-backdrop"></div>
+  <header>
+    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 1rem 2rem;">
+      <div style="font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.5rem;">
+        <span style="color: var(--accent-emerald);">PuterVision</span> / behavior-runtime-mcp
+      </div>
+      <nav style="display: flex; gap: 1.5rem; font-size: 0.9rem;">
+        <a href="#simulator" style="color: var(--text-secondary); text-decoration: none;">60Hz Simulator</a>
+        <a href="#tools" style="color: var(--text-secondary); text-decoration: none;">Tools</a>
+        <a href="#safety" style="color: var(--text-secondary); text-decoration: none;">Safety Stack</a>
+        <a href="https://github.com/putervision/behavior-runtime-mcp" target="_blank" style="color: var(--accent-emerald); text-decoration: none;">GitHub →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main style="max-width: 1200px; margin: 0 auto; padding: 3rem 2rem;">
+    <!-- Hero -->
+    <section style="text-align: center; margin-bottom: 4rem;">
+      <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--accent-emerald); font-size: 0.85rem; margin-bottom: 1rem;">
+        Model Context Protocol Server • v0.1.0
+      </div>
+      <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; background: linear-gradient(135deg, #fff 0%, #9ca3af 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        In-Browser ~60Hz Behavior Tree Execution
+      </h1>
+      <p style="font-size: 1.2rem; color: var(--text-secondary); max-width: 800px; margin: 0 auto 2rem;">
+        Deterministic, low-latency action execution inside browser runtimes with reactive interrupt triggers, telemetry recordings, and 5-layer safety guardrails.
+      </p>
+      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-flex; align-items: center; gap: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;">
+        <code>npx @putervision/behavior-runtime-mcp init</code>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1.5rem; font-style: italic;">
+        *Functional agency and closed-loop automation — not consciousness, sentience, or AGI.*
+      </p>
+    </section>
+
+    <!-- Interactive 60Hz Step Simulator -->
+    <section id="simulator" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 4rem;">
+      <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        ⚡ Interactive Behavior Tree Step Simulator
+      </h2>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Step through a live behavior tree tick loop. Drop HP below 30 to see the reactive trigger preempt the combat sequence and engage the emergency heal branch.
+      </p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.25rem;">
+              <span>Agent Health (HP)</span> <span id="hp-val" style="color: var(--accent-emerald);">100</span>
+            </label>
+            <input type="range" id="hp-slider" min="0" max="100" value="100" style="width: 100%;">
+          </div>
+          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button id="btn-tick" style="padding: 0.6rem 1.2rem; background: var(--accent-emerald); color: #000; font-weight: 700; border: none; border-radius: 6px; cursor: pointer;">
+              ▶ Tick Tree (+1 Frame)
+            </button>
+            <button id="btn-reset" style="padding: 0.6rem 1.2rem; background: rgba(255, 255, 255, 0.1); color: #fff; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">
+              ↺ Reset
+            </button>
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-secondary);">
+            <div>Tick Count: <span id="tick-val" style="color: #fff;">0</span></div>
+            <div>Active Node: <span id="node-val" style="color: var(--accent-emerald);">root</span></div>
+            <div>Blackboard: <span id="bb-val" style="color: #fff;">{}</span></div>
+          </div>
+        </div>
+        <div style="background: rgba(0, 0, 0, 0.4); border-radius: 8px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.05); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent-emerald); font-family: 'Outfit', sans-serif;">Execution Log</h3>
+          <div id="log-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 200px; overflow-y: auto;">
+            <div style="color: var(--text-secondary);">[System] Behavior tree initialized. Ready to tick.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 Tools Explorer -->
+    <section id="tools" style="margin-bottom: 4rem;">
+      <h2 style="font-size: 1.75rem; margin-bottom: 1.5rem;">🛠️ Consolidated MCP Tools (10 Tools)</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem;">
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">load_behavior</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Inject and start behavior tree execution in browser.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">set_parameters</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Dynamically update runtime execution parameters on the fly.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">get_status</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Query active status, node path, and tick counters.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">abort_behavior</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Immediately halt, pause, or resume execution.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">register_trigger</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Configure priority interrupts with cooldown guards.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">replay_recording</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Capture and replay deterministic frame actions.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">get_metrics</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Retrieve telemetry metrics and duration stats.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">manage_behaviors</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">CRUD for immutable behavior tree JSON definitions.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">manage_blackboard</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Read and write behavior tree blackboard state.</p>
+        </div>
+        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+          <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">manage_runtime_db</code>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Database maintenance, diagnostics, and SHA-256 audit.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top: 1px solid var(--border-color); text-align: center; padding: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
+    MIT © 2026 PuterVision • Autonomous Pentad Ecosystem
+  </footer>
+
+  <script>
+    let tick = 0;
+    let blackboard = { resource_count: 0 };
+
+    document.getElementById('hp-slider').addEventListener('input', (e) => {
+      document.getElementById('hp-val').innerText = e.target.value;
+      if (parseInt(e.target.value) < 30) {
+        document.getElementById('hp-val').style.color = '#ef4444';
+      } else {
+        document.getElementById('hp-val').style.color = 'var(--accent-emerald)';
+      }
+    });
+
+    document.getElementById('btn-tick').addEventListener('click', () => {
+      tick++;
+      const hp = parseInt(document.getElementById('hp-slider').value);
+      let activeNode = '';
+      let logMsg = '';
+
+      if (hp < 30) {
+        activeNode = 'root/emergency_heal/flee_to_safety';
+        logMsg = `[Tick ${tick}] 🚨 EMERGENCY TRIGGER FIRED (HP=${hp} < 30) -> Executing flee_to_safety`;
+      } else if (tick % 3 === 0) {
+        blackboard.resource_count = (blackboard.resource_count || 0) + 1;
+        activeNode = 'root/combat_kite/attack_nearest';
+        logMsg = `[Tick ${tick}] Executing attack_nearest (Target engaged)`;
+      } else {
+        activeNode = 'root/combat_kite/move_to_orbit';
+        logMsg = `[Tick ${tick}] Executing move_to (Orbiting waypoint)`;
+      }
+
+      document.getElementById('tick-val').innerText = tick;
+      document.getElementById('node-val').innerText = activeNode;
+      document.getElementById('bb-val').innerText = JSON.stringify(blackboard);
+
+      const list = document.getElementById('log-list');
+      const item = document.createElement('div');
+      item.innerText = logMsg;
+      if (hp < 30) item.style.color = '#f87171';
+      list.prepend(item);
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      tick = 0;
+      blackboard = { resource_count: 0 };
+      document.getElementById('tick-val').innerText = 0;
+      document.getElementById('node-val').innerText = 'root';
+      document.getElementById('bb-val').innerText = '{}';
+      document.getElementById('log-list').innerHTML = '<div style="color: var(--text-secondary);">[System] Reset complete. Ready to tick.</div>';
+    });
+  </script>
+</body>
+</html>

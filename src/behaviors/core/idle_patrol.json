@@ -1,0 +1,35 @@
+{
+  "id": "idle_patrol",
+  "type": "sequence",
+  "name": "Idle Patrol Sequence",
+  "children": [
+    {
+      "id": "cond_timer",
+      "type": "condition",
+      "name": "timer_elapsed",
+      "parameters": {
+        "threshold_ticks": 10
+      }
+    },
+    {
+      "id": "act_move",
+      "type": "action",
+      "name": "move_to",
+      "parameters": {
+        "destination": [
+          15,
+          0,
+          15
+        ]
+      }
+    },
+    {
+      "id": "act_wait",
+      "type": "action",
+      "name": "wait",
+      "parameters": {
+        "ticks": 30
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "manifest_version": "0.2",
+  "name": "@putervision/behavior-runtime-mcp",
+  "version": "0.1.0",
+  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety.",
+  "author": {
+    "name": "PuterVision"
+  },
+  "homepage": "https://github.com/putervision/behavior-runtime-mcp#readme",
+  "server": {
+    "type": "node",
+    "entry_point": "./dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/./dist/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/putervision/behavior-runtime-mcp.git"
+  }
+}

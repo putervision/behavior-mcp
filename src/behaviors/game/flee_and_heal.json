@@ -1,0 +1,17 @@
+{
+  "id": "flee_and_heal",
+  "type": "sequence",
+  "name": "Flee and Heal Sequence",
+  "children": [
+    {
+      "id": "act_flee_safe",
+      "type": "action",
+      "name": "flee_to_safety"
+    },
+    {
+      "id": "act_heal_potion",
+      "type": "action",
+      "name": "heal"
+    }
+  ]
+}

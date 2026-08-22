@@ -1,0 +1,57 @@
+{
+  "id": "combat_kite",
+  "type": "selector",
+  "name": "Combat Kite Selector",
+  "children": [
+    {
+      "id": "seq_emergency_flee",
+      "type": "sequence",
+      "children": [
+        {
+          "id": "cond_hp_crit",
+          "type": "condition",
+          "name": "hp_below",
+          "parameters": {
+            "threshold": 25
+          }
+        },
+        {
+          "id": "act_flee",
+          "type": "action",
+          "name": "flee_to_safety"
+        }
+      ]
+    },
+    {
+      "id": "seq_attack",
+      "type": "sequence",
+      "children": [
+        {
+          "id": "cond_enemy",
+          "type": "condition",
+          "name": "enemy_in_range",
+          "parameters": {
+            "range": 20
+          }
+        },
+        {
+          "id": "act_attack",
+          "type": "action",
+          "name": "attack_nearest"
+        }
+      ]
+    },
+    {
+      "id": "act_fallback_patrol",
+      "type": "action",
+      "name": "move_to",
+      "parameters": {
+        "destination": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ]
+}

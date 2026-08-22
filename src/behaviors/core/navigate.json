@@ -1,0 +1,27 @@
+{
+  "id": "navigate",
+  "type": "sequence",
+  "name": "Navigate Waypoints",
+  "children": [
+    {
+      "id": "act_nav",
+      "type": "action",
+      "name": "move_to",
+      "parameters": {
+        "destination": [
+          50,
+          0,
+          50
+        ]
+      }
+    },
+    {
+      "id": "act_interact",
+      "type": "action",
+      "name": "interact",
+      "parameters": {
+        "target": "waypoint_beacon"
+      }
+    }
+  ]
+}

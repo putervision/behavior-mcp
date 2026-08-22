@@ -1,0 +1,9 @@
+.state-memory-mcp
+
+# vision-memory-mcp local database
+.vision-memory-mcp/
+.env
+
+.world-model-mcp
+
+node_modules

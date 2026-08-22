@@ -1,0 +1,48 @@
+{
+  "id": "gather_loop",
+  "type": "selector",
+  "name": "Gather Loop Selector",
+  "children": [
+    {
+      "id": "seq_deposit",
+      "type": "sequence",
+      "children": [
+        {
+          "id": "cond_full",
+          "type": "condition",
+          "name": "resource_above",
+          "parameters": {
+            "capacity": 10
+          }
+        },
+        {
+          "id": "act_deposit",
+          "type": "action",
+          "name": "interact",
+          "parameters": {
+            "target": "bank"
+          }
+        }
+      ]
+    },
+    {
+      "id": "seq_harvest",
+      "type": "sequence",
+      "children": [
+        {
+          "id": "act_gather",
+          "type": "action",
+          "name": "gather"
+        },
+        {
+          "id": "act_wait_node",
+          "type": "action",
+          "name": "wait",
+          "parameters": {
+            "ticks": 10
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "name": "@putervision/behavior-runtime-mcp",
+  "version": "0.1.0",
+  "description": "High-frequency in-browser behavior tree execution engine for autonomous AI agents \u2014 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "model-context-protocol-server",
+    "behavior-tree",
+    "behavior-runtime",
+    "60hz",
+    "in-browser-execution",
+    "playwright",
+    "browser-automation",
+    "game-ai",
+    "agent-runtime",
+    "reactive-triggers",
+    "telemetry",
+    "action-replay",
+    "rate-limiter",
+    "putervision",
+    "ai-agents",
+    "ai-assistant",
+    "cursor",
+    "cursor-rules",
+    "claude-code",
+    "windsurf",
+    "sqlite",
+    "developer-tools"
+  ],
+  "homepage": "https://github.com/putervision/behavior-runtime-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/putervision/behavior-runtime-mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/putervision/behavior-runtime-mcp.git"
+  },
+  "mcpName": "io.github.putervision/behavior-runtime-mcp",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "author": "PuterVision",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.js"
+    },
+    "./cli": {
+      "types": "./dist/cli.d.ts",
+      "import": "./dist/cli.js"
+    }
+  },
+  "bin": {
+    "behavior-runtime-mcp": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "server.json",
+    "manifest.json",
+    "glama.json",
+    "PROJECT_INSTRUCTIONS_TEMPLATE.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "ci": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build",
+    "cli": "node dist/cli.js",
+    "dev": "tsup --watch --onSuccess \"node dist/index.js\"",
+    "format": "prettier --write src/**/*.ts tests/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts tests/**/*.ts",
+    "lint": "eslint src/**/*.ts",
+    "prepublishOnly": "npm run build",
+    "release": "npm publish",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "playwright": "^1.40.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "better-sqlite3": "^11.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/better-sqlite3": "^7.6.10",
+    "@types/node": "^20.12.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^10.8.0",
+    "jsdom": "^24.0.0",
+    "@types/jsdom": "^21.1.6",
+    "prettier": "^3.9.6",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.2",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "@hono/node-server": "^2.0.5",
+    "esbuild": "^0.28.1",
+    "nanoid": "^3.3.18",
+    "vite": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

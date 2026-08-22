@@ -1,0 +1,26 @@
+# @putervision/behavior-runtime-mcp
+
+> High-Frequency (~60Hz) In-Browser Behavior Tree Execution Engine for AI Agents
+
+`@putervision/behavior-runtime-mcp` executes deterministic behavior trees directly in browser runtimes at 60Hz. It bridges cognitive reasoning decisions with deterministic low-latency action sequences, featuring reactive interrupt triggers, frame recordings, telemetry analytics, and multi-layer safety guardrails.
+
+## Core Capabilities
+- **60Hz Browser Tick Loop**: Injectable standalone executor running sequences, selectors, decorators, and leaf actions.
+- **Immutable Behavior Trees**: Registered JSON definitions verified with SHA-256 `tree_hash`.
+- **Reactive Interrupt Triggers**: Priority preemption with cooldown guards preventing interrupt storms.
+- **Telemetry & Recordings**: Frame-by-frame capture with adaptive playback and duration metrics.
+- **5-Layer Safety Stack**: Watchdog monitor, rate limiter (max 60 actions/sec), leaf policy gate, kill switch, and origin allowlists.
+
+## 10 Consolidated MCP Tools
+1. `load_behavior`: Inject and start behavior tree execution in browser runtime.
+2. `set_parameters`: Update execution parameters on the fly.
+3. `get_status`: Query active status, current node path, and tick counters.
+4. `abort_behavior`: Immediately halt, pause, or resume execution.
+5. `register_trigger`: Configure priority interrupts with cooldown guards.
+6. `replay_recording`: Capture and replay deterministic frame actions.
+7. `get_metrics`: Query execution telemetry and duration statistics.
+8. `manage_behaviors`: Register and version behavior tree definitions with SHA-256 tree hashes.
+9. `manage_blackboard`: Read and write behavior tree blackboard state variables.
+10. `manage_runtime_db`: Database maintenance, diagnostics, and SHA-256 Merkle audit verification.
+
+*Non-claims statement: Functional agency and closed-loop automation — not consciousness, sentience, or AGI.*
