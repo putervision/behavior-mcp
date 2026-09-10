@@ -6,13 +6,32 @@
   <title>Behavior MCP — ~60Hz In-Browser Behavior Tree Execution Engine</title>
   <meta name="description" content="High-frequency in-browser behavior tree execution engine for autonomous AI agents — 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.">
   <meta name="keywords" content="mcp, model-context-protocol, behavior-tree, 60hz, in-browser-execution, playwright, game-ai, putervision, sqlite">
-  <meta property="og:title" content="Behavior MCP — PuterVision">
-  <meta property="og:description" content="In-browser ~60Hz behavior tree execution engine for autonomous AI agents.">
+  <meta name="author" content="PuterVision">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0b0f19">
+  <link rel="canonical" href="https://behaviormcp.com/">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://behaviormcp.com/">
+  <meta property="og:title" content="Behavior MCP — ~60Hz In-Browser Behavior Tree Execution Engine">
+  <meta property="og:description" content="High-frequency in-browser behavior tree execution engine for autonomous AI agents — 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.">
+  <meta property="og:image" content="putervision-icon.png">
+  <meta property="og:site_name" content="PuterVision">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://behaviormcp.com/">
+  <meta name="twitter:title" content="Behavior MCP — ~60Hz In-Browser Behavior Tree Execution Engine">
+  <meta name="twitter:description" content="High-frequency in-browser behavior tree execution engine for autonomous AI agents — 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.">
+  <meta name="twitter:image" content="putervision-icon.png">
+
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -21,24 +40,53 @@
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Cross-platform",
     "offers": { "@type": "Offer", "price": "0" },
-    "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety."
+    "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers, telemetry recordings, and 5-layer safety guardrails.",
+    "url": "https://behaviormcp.com/",
+    "author": {
+      "@type": "Organization",
+      "name": "PuterVision",
+      "url": "https://putervision.com"
+    }
   }
   </script>
 </head>
 <body>
   <div class="glow-backdrop"></div>
+  <div class="glow-backdrop-2"></div>
+
   <header>
-    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 1rem 2rem;">
-      <div style="font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.5rem;">
-        <span style="color: var(--accent-emerald);">PuterVision</span> / behavior-mcp
-      </div>
-      <nav style="display: flex; gap: 1.5rem; font-size: 0.9rem;">
-        <a href="#simulator" style="color: var(--text-secondary); text-decoration: none;">60Hz Simulator</a>
-        <a href="#tools" style="color: var(--text-secondary); text-decoration: none;">Tools</a>
-        <a href="#safety" style="color: var(--text-secondary); text-decoration: none;">Safety Stack</a>
-        <a href="https://github.com/putervision/behavior-mcp" target="_blank" style="color: var(--accent-emerald); text-decoration: none;">GitHub →</a>
-      </nav>
+    <div class="logo">
+      <a href="https://putervision.com" target="_blank" rel="noopener noreferrer" class="brand-link">
+        <img src="putervision-icon.png" alt="PuterVision Icon" class="nav-brand-img"> PuterVision
+      </a>
+      <span class="logo-sep">/</span>
+      <a href="https://behaviormcp.com" class="logo-link">
+        <span class="logo-text">⚡ behavior-mcp</span>
+      </a>
     </div>
+    <nav aria-label="Main Navigation">
+      <ul class="nav-links">
+        <li><a href="#simulator">Simulator</a></li>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#safety">Safety Stack</a></li>
+        <li><a href="#quickstart">Quickstart</a></li>
+      </ul>
+    </nav>
+    <a href="https://github.com/putervision/behavior-mcp" class="btn-github" target="_blank"
+      rel="noopener noreferrer" title="Star behavior-mcp on GitHub">
+      <svg height="16" width="16" viewBox="0 0 16 16" fill="#fbbf24">
+        <path
+          d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z">
+        </path>
+      </svg>
+      <span>Star on</span>
+      <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+        <path
+          d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+        </path>
+      </svg>
+      <span>GitHub</span>
+    </a>
   </header>
 
   <main style="max-width: 1200px; margin: 0 auto; padding: 3rem 2rem;">
@@ -47,14 +95,15 @@
       <div style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--accent-emerald); font-size: 0.85rem; margin-bottom: 1rem;">
         Model Context Protocol Server • v0.1.1
       </div>
-      <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; background: linear-gradient(135deg, #fff 0%, #9ca3af 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+      <h1 class="hero-title" style="font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; background: linear-gradient(135deg, #fff 0%, #9ca3af 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
         In-Browser ~60Hz Behavior Tree Execution
       </h1>
       <p style="font-size: 1.2rem; color: var(--text-secondary); max-width: 800px; margin: 0 auto 2rem;">
         Deterministic, low-latency action execution inside browser runtimes with reactive interrupt triggers, telemetry recordings, and 5-layer safety guardrails.
       </p>
-      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-flex; align-items: center; gap: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;">
-        <code>npx @putervision/behavior-mcp init</code>
+      <div class="code-container" style="display: inline-flex; width: auto; max-width: 100%; justify-content: center; gap: 1rem;">
+        <span class="code-text">npx @putervision/behavior-mcp init</span>
+        <button class="btn-copy" onclick="copyToClipboard('npx @putervision/behavior-mcp init', this)">Copy</button>
       </div>
       <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1.5rem; font-style: italic;">
         *Functional agency and closed-loop automation — not consciousness, sentience, or AGI.*
@@ -69,7 +118,7 @@
       <p style="color: var(--text-secondary); margin-bottom: 2rem;">
         Step through a live behavior tree tick loop. Drop HP below 30 to see the reactive trigger preempt the combat sequence and engage the emergency heal branch.
       </p>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+      <div class="simulator-grid">
         <div>
           <div style="margin-bottom: 1.25rem;">
             <label style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.25rem;">
@@ -77,11 +126,11 @@
             </label>
             <input type="range" id="hp-slider" min="0" max="100" value="100" style="width: 100%;">
           </div>
-          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-            <button id="btn-tick" style="padding: 0.6rem 1.2rem; background: var(--accent-emerald); color: #000; font-weight: 700; border: none; border-radius: 6px; cursor: pointer;">
+          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+            <button id="btn-tick" style="padding: 0.6rem 1.2rem; background: var(--accent-emerald); color: #000; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
               ▶ Tick Tree (+1 Frame)
             </button>
-            <button id="btn-reset" style="padding: 0.6rem 1.2rem; background: rgba(255, 255, 255, 0.1); color: #fff; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">
+            <button id="btn-reset" style="padding: 0.6rem 1.2rem; background: rgba(255, 255, 255, 0.1); color: #fff; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
               ↺ Reset
             </button>
           </div>
@@ -102,57 +151,179 @@
 
     <!-- 10 Tools Explorer -->
     <section id="tools" style="margin-bottom: 4rem;">
-      <h2 style="font-size: 1.75rem; margin-bottom: 1.5rem;">🛠️ Consolidated MCP Tools (10 Tools)</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem;">
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+      <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">🛠️ Consolidated MCP Tools (10 Tools)</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Deterministic, low-latency execution tools for high-frequency browser and desktop behavior control.
+      </p>
+      <div class="tools-grid">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">load_behavior</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Inject and start behavior tree execution in browser.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Inject and start behavior tree execution loop inside target browser runtimes.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">set_parameters</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Dynamically update runtime execution parameters on the fly.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Dynamically update runtime execution variables and tuning flags on the fly.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">get_status</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Query active status, node path, and tick counters.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Query active execution status, active node traversal path, and tick counters.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">abort_behavior</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Immediately halt, pause, or resume execution.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Immediately halt, pause, or resume execution and release active browser inputs.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">register_trigger</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Configure priority interrupts with cooldown guards.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Configure priority interrupt triggers with cooldown guards and branch preemption.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">replay_recording</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Capture and replay deterministic frame actions.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Capture and deterministically replay synchronized browser frame action sequences.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">get_metrics</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Retrieve telemetry metrics and duration stats.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Retrieve runtime execution telemetry, tick durations, stuck events, and stats.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">manage_behaviors</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">CRUD for immutable behavior tree JSON definitions.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Register, version, and query immutable JSON tree definitions with SHA-256 validation.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">manage_blackboard</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Read and write behavior tree blackboard state.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Read, write, and query shared behavior tree blackboard state variables.</p>
         </div>
-        <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+        <div class="tool-card">
           <code style="color: var(--accent-emerald); font-weight: 700; font-size: 1.1rem;">manage_runtime_db</code>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Database maintenance, diagnostics, and SHA-256 audit.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Database diagnostics, checkpoints save/restore, and SHA-256 Merkle audit verification.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Safety Stack Section -->
+    <section id="safety" style="margin-bottom: 4rem;">
+      <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        🛡️ 5-Layer Behavioral Safety Stack
+      </h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Production-grade execution guardrails guaranteeing stability, browser thread safety, and immediate emergency disengagement.
+      </p>
+      <div class="safety-grid">
+        <div class="safety-card">
+          <h3 style="color: var(--accent-emerald);">⏱️ 1. Token Bucket Rate Limiting</h3>
+          <p>Strict frequency guards enforce tick intervals up to 60Hz. Burst dampening prevents event-loop starvation and runaway browser DOM manipulation spikes.</p>
+        </div>
+        <div class="safety-card">
+          <h3 style="color: var(--accent-emerald);">🔍 2. Stuck State Detection</h3>
+          <p>Heuristic cycle detectors and stationary watchdogs identify repeated failure sequences, deadlocked nodes, or idle loops within 500ms, triggering recovery branches.</p>
+        </div>
+        <div class="safety-card">
+          <h3 style="color: var(--accent-emerald);">💀 3. Dead-Man Watchdog</h3>
+          <p>Constant client heartbeat requirement. If a communication gap or unhandled crash exceeds 2000ms, all active keys, mouse buttons, and browser inputs disengage immediately.</p>
+        </div>
+        <div class="safety-card">
+          <h3 style="color: var(--accent-emerald);">🚪 4. Policy Gate Verification</h3>
+          <p>All action payloads pass deterministic security boundary checks (domain whitelisting, prohibited selector blacklists, destructive mutation guards) before entering the tick queue.</p>
+        </div>
+        <div class="safety-card">
+          <h3 style="color: var(--accent-emerald);">📜 5. SHA-256 Merkle Audit Trail</h3>
+          <p>Every tree definition, trigger activation, parameter hot-swap, and abortion event is cryptographically hashed and chained into a tamper-evident audit log for post-mortem forensics.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quickstart Section -->
+    <section id="quickstart" style="margin-bottom: 4rem;">
+      <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">🚀 Quickstart & Client Integration</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Integrate <code>behavior-mcp</code> into your AI coding assistant with zero external dependencies.
+      </p>
+
+      <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: #fff;">1. Global Installation</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem;">Install globally via npm for CLI and server usage:</p>
+        <div class="code-container">
+          <span class="code-text">npm install -g @putervision/behavior-mcp</span>
+          <button class="btn-copy" onclick="copyToClipboard('npm install -g @putervision/behavior-mcp', this)">Copy</button>
+        </div>
+      </div>
+
+      <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: #fff;">2. Client Configurations</h3>
+
+        <div style="margin-bottom: 1.25rem;">
+          <h4 style="font-size: 0.95rem; color: var(--accent-emerald); margin-bottom: 0.4rem;">Claude Code CLI</h4>
+          <div class="code-container">
+            <span class="code-text">claude mcp add behavior-mcp -- npx -y @putervision/behavior-mcp</span>
+            <button class="btn-copy" onclick="copyToClipboard('claude mcp add behavior-mcp -- npx -y @putervision/behavior-mcp', this)">Copy</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <h4 style="font-size: 0.95rem; color: var(--accent-emerald); margin-bottom: 0.4rem;">Cursor IDE (.cursor/mcp.json)</h4>
+          <div class="code-container" style="display: block; white-space: pre; overflow-x: auto; padding: 1rem;">
+<span class="code-text">{
+  "mcpServers": {
+    "behavior-mcp": {
+      "command": "npx",
+      "args": ["-y", "@putervision/behavior-mcp"]
+    }
+  }
+}</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="font-size: 0.95rem; color: var(--accent-emerald); margin-bottom: 0.4rem;">Gemini CLI</h4>
+          <div class="code-container">
+            <span class="code-text">gemini mcp add behavior-mcp npx -y @putervision/behavior-mcp</span>
+            <button class="btn-copy" onclick="copyToClipboard('gemini mcp add behavior-mcp npx -y @putervision/behavior-mcp', this)">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: #fff;">3. Health & Runtime Verification</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem;">Verify installation and audit runtime database health:</p>
+        <div class="code-container">
+          <span class="code-text">behavior-mcp doctor</span>
+          <button class="btn-copy" onclick="copyToClipboard('behavior-mcp doctor', this)">Copy</button>
         </div>
       </div>
     </section>
   </main>
 
-  <footer style="border-top: 1px solid var(--border-color); text-align: center; padding: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
-    MIT © 2026 PuterVision • Autonomous Pentad Ecosystem
+  <footer>
+    <p>&copy; 2025-2026 <a href="https://putervision.com" target="_blank" rel="noopener noreferrer" style="color: var(--accent-emerald); text-decoration: none;">PuterVision</a>. Direct inquiries to <a href="mailto:contact@putervision.com" style="color: var(--accent-emerald); text-decoration: none;">contact@putervision.com</a>.</p>
+    <p style="font-size: 0.78rem; margin-top: 0.75rem; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.4; color: var(--text-secondary);">
+      <strong>Local Privacy & Data Protection Guarantee:</strong> behavior-mcp runs 100% locally on your machine. All behavior tree definitions, execution recordings, blackboard snapshots, and telemetry logs are stored locally in your workspace's <code>.behavior-mcp/behavior.db</code> SQLite database. No telemetry, user interaction frames, or workspace logs are ever transmitted or collected by PuterVision.
+    </p>
+    <p style="font-size: 0.75rem; margin-top: 0.5rem; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.4; color: var(--text-secondary);">
+      <strong>Third-Party AI Model API Fees:</strong> behavior-mcp is an open-source MCP server released under the MIT License. Interfacing with AI models (such as Anthropic Claude, OpenAI GPT-4o, xAI Grok, or Google Gemini) via coding clients may incur API usage fees billed directly by those respective providers. PuterVision is not responsible for third-party API token billing.
+    </p>
+    <p style="font-size: 0.75rem; margin-top: 0.5rem; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.4; color: var(--text-secondary);">
+      <strong>Disclaimer:</strong> This software is provided "as is", without warranty of any kind, express or implied. Under no circumstances shall PuterVision or contributors be liable for any database corruption, browser crash, execution errors, or damages resulting from autonomous behavior tree execution. Always test policies in sandboxed environments before granting live browser input control.
+    </p>
+    <p style="font-size: 0.7rem; margin-top: 0.5rem; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.4; color: var(--text-secondary);">
+      * All product names, trademarks, logos, and brands (such as Cursor, Claude, OpenAI, Gemini, Playwright, Windsurf, GitHub, and SQLite) are property of their respective owners. Reference to third-party technologies is for compatibility identification only and does not imply endorsement, sponsorship, or affiliation.
+    </p>
   </footer>
 
   <script>
+    // Copy button helper
+    function copyToClipboard(text, btnElement) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (btnElement) {
+          const originalText = btnElement.textContent;
+          btnElement.textContent = 'Copied!';
+          btnElement.style.color = '#10b981';
+          setTimeout(() => {
+            btnElement.textContent = originalText;
+            btnElement.style.color = '';
+          }, 2000);
+        }
+      });
+    }
+
     let tick = 0;
     let blackboard = { resource_count: 0 };
 
