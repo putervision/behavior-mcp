@@ -4,10 +4,7 @@ export interface ToolDefinition {
   inputSchema: Record<string, unknown>;
 }
 
-export const READ_ONLY_TOOLS = new Set([
-  'get_status',
-  'get_metrics',
-]);
+export const READ_ONLY_TOOLS = new Set(['get_status', 'get_metrics']);
 
 export const toolDefinitions: ToolDefinition[] = [
   {
@@ -22,10 +19,17 @@ export const toolDefinitions: ToolDefinition[] = [
           description: 'Behavior loading operation',
         },
         behavior_name: { type: 'string', description: 'Name of the behavior tree to load' },
-        behavior_version: { type: 'number', description: 'Version of behavior tree (defaults to latest)' },
+        behavior_version: {
+          type: 'number',
+          description: 'Version of behavior tree (defaults to latest)',
+        },
         parameters: { type: 'object', description: 'Initial execution parameters' },
         session_id: { type: 'string', description: 'Linked state-memory session ID' },
         intention_id: { type: 'string', description: 'Linked agent-reasoning intention ID' },
+        trace_id: {
+          type: 'string',
+          description: 'Distributed trace ID for cross-server correlation',
+        },
         client_request_id: { type: 'string', description: 'Idempotency key' },
         project: { type: 'string', description: 'Target project slug' },
       },
@@ -34,7 +38,8 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'set_parameters',
-    description: 'Dynamically update or query execution parameters for the active behavior runtime.',
+    description:
+      'Dynamically update or query execution parameters for the active behavior runtime.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -52,7 +57,8 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'get_status',
-    description: 'Query active behavior execution status, current node path, tick count, duration, and error state.',
+    description:
+      'Query active behavior execution status, current node path, tick count, duration, and error state.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -70,7 +76,8 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'abort_behavior',
-    description: 'Immediately halt, pause, or resume behavior execution and disengage active inputs.',
+    description:
+      'Immediately halt, pause, or resume behavior execution and disengage active inputs.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -81,6 +88,7 @@ export const toolDefinitions: ToolDefinition[] = [
         },
         execution_id: { type: 'string', description: 'Target execution ID' },
         reason: { type: 'string', description: 'Reason for abort or pause' },
+        trace_id: { type: 'string', description: 'Distributed trace ID' },
         project: { type: 'string', description: 'Target project slug' },
       },
       required: ['action'],
@@ -88,18 +96,25 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'register_trigger',
-    description: 'Configure and manage reactive interrupt triggers with priority preemption and cooldown guards.',
+    description:
+      'Configure and manage reactive interrupt triggers with priority preemption and cooldown guards.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
-          enum: ['register', 'list', 'update', 'remove', 'enable', 'disable'],
+          enum: ['register', 'list'],
           description: 'Trigger operation',
         },
         name: { type: 'string', description: 'Trigger name' },
-        behavior_name: { type: 'string', description: 'Behavior tree to activate when condition fires' },
-        condition_type: { type: 'string', description: 'Condition type (e.g. hp_threshold, enemy_proximity)' },
+        behavior_name: {
+          type: 'string',
+          description: 'Behavior tree to activate when condition fires',
+        },
+        condition_type: {
+          type: 'string',
+          description: 'Condition type (e.g. hp_threshold, enemy_proximity)',
+        },
         condition_params: { type: 'object', description: 'Condition evaluation parameters' },
         priority: { type: 'number', description: 'Preemption priority' },
         cooldown_ms: { type: 'number', description: 'Minimum cooldown interval between fires' },
@@ -117,12 +132,17 @@ export const toolDefinitions: ToolDefinition[] = [
       properties: {
         action: {
           type: 'string',
-          enum: ['start', 'stop', 'list', 'capture', 'delete'],
+          enum: ['capture', 'list'],
           description: 'Recording operation',
         },
         name: { type: 'string', description: 'Recording name' },
         recording_id: { type: 'string', description: 'Recording ID' },
-        frames: { type: 'array', items: { type: 'object' }, description: 'Captured frame sequence' },
+        execution_id: { type: 'string', description: 'Target execution ID' },
+        frames: {
+          type: 'array',
+          items: { type: 'object' },
+          description: 'Captured frame sequence',
+        },
         project: { type: 'string', description: 'Target project slug' },
       },
       required: ['action'],
@@ -130,7 +150,8 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'get_metrics',
-    description: 'Retrieve runtime execution telemetry, tick durations, stuck events, and category statistics.',
+    description:
+      'Retrieve runtime execution telemetry, tick durations, stuck events, and category statistics.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -142,6 +163,7 @@ export const toolDefinitions: ToolDefinition[] = [
         execution_id: { type: 'string', description: 'Filter metrics by execution ID' },
         behavior_name: { type: 'string', description: 'Filter metrics by behavior tree name' },
         limit: { type: 'number', description: 'Max records' },
+        trace_id: { type: 'string', description: 'Distributed trace ID' },
         project: { type: 'string', description: 'Target project slug' },
       },
       required: ['action'],
@@ -149,13 +171,14 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'manage_behaviors',
-    description: 'CRUD operations for immutable JSON behavior tree definitions with SHA-256 tree hash verification.',
+    description:
+      'CRUD operations for immutable JSON behavior tree definitions with SHA-256 tree hash verification.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
-          enum: ['register', 'list', 'get', 'update', 'delete', 'export', 'import'],
+          enum: ['register', 'list', 'get'],
           description: 'Behavior definition management operation',
         },
         name: { type: 'string', description: 'Behavior tree name' },
@@ -171,19 +194,18 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'manage_blackboard',
-    description: 'Read, write, or clear shared behavior tree blackboard state variables.',
+    description: 'Read, write, or query shared behavior tree blackboard state variables.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
-          enum: ['get', 'set', 'clear', 'dump'],
+          enum: ['get', 'set'],
           description: 'Blackboard operation',
         },
         execution_id: { type: 'string', description: 'Target execution ID' },
         key: { type: 'string', description: 'Blackboard variable key' },
         value: { description: 'Blackboard variable value' },
-        blackboard: { type: 'object', description: 'Full blackboard object for dump' },
         project: { type: 'string', description: 'Target project slug' },
       },
       required: ['action'],
@@ -191,13 +213,14 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'manage_runtime_db',
-    description: 'Database maintenance, diagnostics, SHA-256 Merkle audit verification, checkpoints save/restore, and diffs.',
+    description:
+      'Database maintenance, diagnostics, SHA-256 Merkle audit verification, checkpoints save/restore, and diffs.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
-          enum: ['backup', 'stats', 'audit', 'snapshot', 'diff', 'restore'],
+          enum: ['stats', 'audit', 'snapshot', 'diff', 'restore'],
           description: 'Database maintenance operation',
         },
         name: { type: 'string', description: 'Snapshot name' },

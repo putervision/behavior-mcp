@@ -13,22 +13,28 @@ export class SnapshotEngine {
       throw new ValidationError('Snapshot name is required.');
     }
 
-    const behaviors = db.prepare('SELECT * FROM behavior_definitions WHERE project = ?').all(params.project);
+    const behaviors = db
+      .prepare('SELECT * FROM behavior_definitions WHERE project = ?')
+      .all(params.project);
     const triggers = db.prepare('SELECT * FROM triggers WHERE project = ?').all(params.project);
-    const executions = db.prepare('SELECT * FROM execution_state WHERE project = ?').all(params.project);
+    const executions = db
+      .prepare('SELECT * FROM execution_state WHERE project = ?')
+      .all(params.project);
 
     const data = { behaviors, triggers, executions };
     const id = generateId();
     const now = getCurrentIsoString();
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO snapshots (id, project, name, description, data_json, created_at)
       VALUES (?, ?, ?, ?, ?, ?)
       ON CONFLICT(project, name) DO UPDATE SET
         description = excluded.description,
         data_json = excluded.data_json,
         created_at = excluded.created_at
-    `).run(id, params.project, params.name, params.description ?? null, JSON.stringify(data), now);
+    `
+    ).run(id, params.project, params.name, params.description ?? null, JSON.stringify(data), now);
 
     return { snapshot_id: id, name: params.name, timestamp: now };
   }
@@ -42,7 +48,9 @@ export class SnapshotEngine {
       .get(params.project, params.name) as any;
 
     if (!row) {
-      throw new ValidationError(`Snapshot "${params.name}" not found for project "${params.project}".`);
+      throw new ValidationError(
+        `Snapshot "${params.name}" not found for project "${params.project}".`
+      );
     }
 
     const data = safeJsonParse(row.data_json, { behaviors: [], triggers: [] });
@@ -79,7 +87,9 @@ export class SnapshotEngine {
     params: { project: string; limit?: number }
   ): Array<{ id: string; name: string; description?: string; created_at: string }> {
     return db
-      .prepare('SELECT id, name, description, created_at FROM snapshots WHERE project = ? ORDER BY created_at DESC LIMIT ?')
+      .prepare(
+        'SELECT id, name, description, created_at FROM snapshots WHERE project = ? ORDER BY created_at DESC LIMIT ?'
+      )
       .all(params.project, params.limit || 50) as any[];
   }
 }

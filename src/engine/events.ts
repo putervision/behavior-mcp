@@ -56,10 +56,12 @@ export function logRuntimeEvent(
     details: params.details,
   });
 
-  db.prepare(`
+  db.prepare(
+    `
     INSERT INTO events (id, project, entity_id, entity_type, action, prev_hash, hash, details_json, timestamp)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
+  `
+  ).run(
     eventId,
     params.project,
     params.entity_id,

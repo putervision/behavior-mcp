@@ -1,8 +1,8 @@
-# @putervision/behavior-runtime-mcp
+# @putervision/behavior-mcp
 
 > High-Frequency (~60Hz) In-Browser Behavior Tree Execution Engine for AI Agents
 
-`@putervision/behavior-runtime-mcp` executes deterministic behavior trees directly in browser runtimes at 60Hz. It bridges cognitive reasoning decisions with deterministic low-latency action sequences, featuring reactive interrupt triggers, frame recordings, telemetry analytics, and multi-layer safety guardrails.
+`@putervision/behavior-mcp` executes deterministic behavior trees directly in browser runtimes at 60Hz. It bridges cognitive reasoning decisions with deterministic low-latency action sequences, featuring reactive interrupt triggers, frame recordings, telemetry analytics, and multi-layer safety guardrails.
 
 ## Core Capabilities
 - **60Hz Browser Tick Loop**: Injectable standalone executor running sequences, selectors, decorators, and leaf actions.

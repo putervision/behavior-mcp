@@ -5,7 +5,8 @@ export type RecordingId = string & { readonly __brand: unique symbol };
 export type SnapshotId = string & { readonly __brand: unique symbol };
 export type EventId = string & { readonly __brand: unique symbol };
 
-export type ExecutionStatus = 'idle' | 'running' | 'paused' | 'success' | 'failed' | 'stuck' | 'aborted' | 'interrupted';
+export type ExecutionStatus =
+  'idle' | 'running' | 'paused' | 'success' | 'failed' | 'stuck' | 'aborted' | 'interrupted';
 export type NodeStatus = 'SUCCESS' | 'FAILURE' | 'RUNNING' | 'INVALID';
 
 export interface BehaviorDefinition {
@@ -24,14 +25,12 @@ export interface BehaviorDefinition {
 
 export interface BehaviorTreeNode {
   id: string;
-  type: 'sequence' | 'selector' | 'parallel' | 'inverter' | 'repeater' | 'timeout' | 'cooldown' | 'guard' | 'action' | 'condition';
+  type: 'sequence' | 'selector' | 'inverter' | 'timeout' | 'guard' | 'action' | 'condition';
   name?: string;
   parameters?: Record<string, unknown>;
   children?: BehaviorTreeNode[];
   guard?: BehaviorTreeNode;
   timeout_ms?: number;
-  cooldown_ms?: number;
-  repeat_count?: number;
 }
 
 export interface ExecutionState {
@@ -41,6 +40,7 @@ export interface ExecutionState {
   behavior_version: number;
   session_id?: string;
   intention_id?: string;
+  trace_id?: string;
   status: ExecutionStatus;
   active_node_path?: string;
   blackboard_json: string;
@@ -76,6 +76,7 @@ export interface ExecutionMetrics {
   execution_id: ExecutionId;
   session_id?: string;
   intention_id?: string;
+  trace_id?: string;
   behavior_name: string;
   status: ExecutionStatus;
   tick_count: number;

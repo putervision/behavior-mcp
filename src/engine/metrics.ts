@@ -1,9 +1,8 @@
 import Database from 'better-sqlite3';
-import { ExecutionMetrics, ExecutionRecording, RecordingId } from '../schema/types.js';
+import { ExecutionMetrics } from '../schema/types.js';
 import { generateId } from '../utils/id.js';
 import { getCurrentIsoString } from '../utils/time.js';
 import { safeJsonParse, safeJsonStringify } from '../utils/json-validator.js';
-import { NotFoundError } from '../utils/errors.js';
 
 export class MetricsEngine {
   static recordMetrics(
@@ -27,13 +26,15 @@ export class MetricsEngine {
     const id = generateId();
     const now = getCurrentIsoString();
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO execution_metrics (
         id, project, execution_id, session_id, intention_id, behavior_name,
         status, tick_count, duration_ms, avg_tick_ms, max_tick_ms, stuck_count,
         interrupt_count, category_metrics_json, created_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
+    `
+    ).run(
       id,
       params.project,
       params.execution_id,
@@ -70,7 +71,10 @@ export class MetricsEngine {
     };
   }
 
-  static getMetrics(db: Database.Database, params: { project: string; execution_id?: string; behavior_name?: string; limit?: number }): ExecutionMetrics[] {
+  static getMetrics(
+    db: Database.Database,
+    params: { project: string; execution_id?: string; behavior_name?: string; limit?: number }
+  ): ExecutionMetrics[] {
     let sql = 'SELECT * FROM execution_metrics WHERE project = ?';
     const sqlParams: any[] = [params.project];
 
@@ -104,67 +108,5 @@ export class MetricsEngine {
       category_metrics: safeJsonParse(r.category_metrics_json, undefined),
       created_at: r.created_at,
     }));
-  }
-}
-
-export class RecordingEngine {
-  static saveRecording(
-    db: Database.Database,
-    params: {
-      project: string;
-      execution_id: string;
-      behavior_name: string;
-      frames: any[];
-      duration_ms?: number;
-    }
-  ): ExecutionRecording {
-    const id = generateId() as RecordingId;
-    const now = getCurrentIsoString();
-    const durationMs = params.duration_ms || Math.round(params.frames.length * 16.6);
-
-    db.prepare(`
-      INSERT INTO recordings (id, project, execution_id, behavior_name, total_frames, frames_json, duration_ms, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(id, params.project, params.execution_id, params.behavior_name, params.frames.length, safeJsonStringify(params.frames), durationMs, now);
-
-    return {
-      id,
-      project: params.project,
-      execution_id: params.execution_id as any,
-      behavior_name: params.behavior_name,
-      total_frames: params.frames.length,
-      frames_json: safeJsonStringify(params.frames),
-      duration_ms: durationMs,
-      created_at: now,
-    };
-  }
-
-  static listRecordings(db: Database.Database, project: string): ExecutionRecording[] {
-    const rows = db.prepare('SELECT * FROM recordings WHERE project = ? ORDER BY created_at DESC LIMIT 50').all(project) as any[];
-    return rows.map((r) => ({
-      id: r.id as RecordingId,
-      project: r.project,
-      execution_id: r.execution_id,
-      behavior_name: r.behavior_name,
-      total_frames: r.total_frames,
-      frames_json: r.frames_json,
-      duration_ms: r.duration_ms,
-      created_at: r.created_at,
-    }));
-  }
-}
-
-export class BlackboardEngine {
-  static getBlackboard(db: Database.Database, params: { project: string; execution_id: string }): Record<string, unknown> {
-    const row = db.prepare('SELECT blackboard_json FROM execution_state WHERE project = ? AND id = ?').get(params.project, params.execution_id) as any;
-    if (!row) throw new NotFoundError(`Execution state "${params.execution_id}" not found.`);
-    return safeJsonParse(row.blackboard_json, {});
-  }
-
-  static setBlackboardKey(db: Database.Database, params: { project: string; execution_id: string; key: string; value: unknown }): Record<string, unknown> {
-    const bb = this.getBlackboard(db, params);
-    bb[params.key] = params.value;
-    db.prepare('UPDATE execution_state SET blackboard_json = ?, updated_at = ? WHERE id = ?').run(safeJsonStringify(bb), getCurrentIsoString(), params.execution_id);
-    return bb;
   }
 }

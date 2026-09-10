@@ -14,10 +14,15 @@ export function validatePath(filePath: string, project?: string): string {
   return validatePathCore(filePath, pathConfig);
 }
 
-const DEFAULT_REGISTRY_PATH = path.join(os.homedir(), '.behavior-runtime-mcp', 'projects.json');
+const DEFAULT_REGISTRY_PATH = path.join(os.homedir(), '.behavior-mcp', 'projects.json');
+const LEGACY_REGISTRY_PATH = path.join(os.homedir(), '.behavior-runtime-mcp', 'projects.json');
 
 export function getRegistryPath(): string {
-  return process.env.BEHAVIOR_REGISTRY_PATH || DEFAULT_REGISTRY_PATH;
+  if (process.env.BEHAVIOR_REGISTRY_PATH) return process.env.BEHAVIOR_REGISTRY_PATH;
+  if (!fs.existsSync(DEFAULT_REGISTRY_PATH) && fs.existsSync(LEGACY_REGISTRY_PATH)) {
+    return LEGACY_REGISTRY_PATH;
+  }
+  return DEFAULT_REGISTRY_PATH;
 }
 
 let registryCache: { registry: Record<string, string>; timestamp: number } | null = null;
@@ -85,6 +90,9 @@ export function sanitizeSlug(str: string): string {
 }
 
 export function resolveProjectRoot(project?: string, cwd = process.cwd()): string {
+  const currentCwd = path.resolve(cwd);
+
+  // 1. Explicit project parameter lookup
   if (project) {
     const registry = getRegistry();
     const slug = sanitizeSlug(project);
@@ -96,18 +104,62 @@ export function resolveProjectRoot(project?: string, cwd = process.cwd()): strin
     }
   }
 
-  let curr = path.resolve(cwd);
+  // 2. Exact match in registry for current CWD
+  const registry = getRegistry();
+  for (const [, projectPath] of Object.entries(registry)) {
+    const resolvedPath = path.resolve(projectPath);
+    if (resolvedPath === currentCwd && fs.existsSync(resolvedPath)) {
+      return resolvedPath;
+    }
+  }
+
+  // 3. If current directory has own package.json or local MCP marker, it is its own project root
+  if (
+    fs.existsSync(path.join(currentCwd, '.behavior-mcp')) ||
+    fs.existsSync(path.join(currentCwd, '.behavior-runtime-mcp')) ||
+    fs.existsSync(path.join(currentCwd, '.state-memory-mcp')) ||
+    fs.existsSync(path.join(currentCwd, '.world-model-mcp')) ||
+    fs.existsSync(path.join(currentCwd, '.vision-memory-mcp')) ||
+    fs.existsSync(path.join(currentCwd, 'package.json'))
+  ) {
+    return currentCwd;
+  }
+
+  // 4. Longest matching registered ancestor directory (excluding homedir)
+  let bestMatch: string | undefined;
+  for (const [, projectPath] of Object.entries(registry)) {
+    const resolvedPath = path.resolve(projectPath);
+    if (resolvedPath === os.homedir()) continue;
+    if (currentCwd.startsWith(resolvedPath + path.sep)) {
+      if (fs.existsSync(resolvedPath)) {
+        if (!bestMatch || resolvedPath.length > bestMatch.length) {
+          bestMatch = resolvedPath;
+        }
+      }
+    }
+  }
+  if (bestMatch) {
+    return bestMatch;
+  }
+
+  // 5. Walk up directory tree to find project markers
+  let curr = currentCwd;
   const home = os.homedir();
   while (curr !== path.dirname(curr) && curr !== home) {
     if (
-      fs.existsSync(path.join(curr, '.git')) ||
-      fs.existsSync(path.join(curr, '.behavior-runtime-mcp'))
+      fs.existsSync(path.join(curr, '.behavior-mcp')) ||
+      fs.existsSync(path.join(curr, '.behavior-runtime-mcp')) ||
+      fs.existsSync(path.join(curr, '.state-memory-mcp')) ||
+      fs.existsSync(path.join(curr, '.world-model-mcp')) ||
+      fs.existsSync(path.join(curr, '.vision-memory-mcp')) ||
+      fs.existsSync(path.join(curr, 'package.json')) ||
+      fs.existsSync(path.join(curr, '.git'))
     ) {
       return curr;
     }
     curr = path.dirname(curr);
   }
-  return path.resolve(cwd);
+  return currentCwd;
 }
 
 export function getProjectSlug(project?: string, cwd = process.cwd()): string {
@@ -128,9 +180,18 @@ export function getBaseDir(projectRoot: string): string {
     return path.resolve(projectRoot, config.storagePath);
   }
   if (process.env.BEHAVIOR_MCP_DIR || process.env.BEHAVIOR_RUNTIME_MCP_DIR) {
-    return path.resolve(projectRoot, (process.env.BEHAVIOR_MCP_DIR || process.env.BEHAVIOR_RUNTIME_MCP_DIR)!);
+    return path.resolve(
+      projectRoot,
+      (process.env.BEHAVIOR_MCP_DIR || process.env.BEHAVIOR_RUNTIME_MCP_DIR)!
+    );
   }
-  return path.join(projectRoot, '.behavior-runtime-mcp');
+  if (fs.existsSync(path.join(projectRoot, '.behavior-mcp'))) {
+    return path.join(projectRoot, '.behavior-mcp');
+  }
+  if (fs.existsSync(path.join(projectRoot, '.behavior-runtime-mcp'))) {
+    return path.join(projectRoot, '.behavior-runtime-mcp');
+  }
+  return path.join(projectRoot, '.behavior-mcp');
 }
 
 export function getProjectDbDir(project?: string, cwd = process.cwd()): string {
@@ -191,7 +252,9 @@ export function getDb(project?: string, cwd = process.cwd()): Database.Database 
     dbCache.set(dbPath, db);
     return db;
   } catch (err: any) {
-    throw new DatabaseError(`Failed to open behavior-runtime database at ${dbPath}: ${err.message}`);
+    throw new DatabaseError(
+      `Failed to open behavior-runtime database at ${dbPath}: ${err.message}`
+    );
   }
 }
 
@@ -235,7 +298,9 @@ export function getReadOnlyDb(project?: string, cwd = process.cwd()): Database.D
     readOnlyDbCache.set(dbPath, db);
     return db;
   } catch (err: any) {
-    throw new DatabaseError(`Failed to open read-only behavior database at ${dbPath}: ${err.message}`);
+    throw new DatabaseError(
+      `Failed to open read-only behavior database at ${dbPath}: ${err.message}`
+    );
   }
 }
 

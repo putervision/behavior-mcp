@@ -6,10 +6,11 @@ import { getReadOnlyDb, getProjectSlug } from './engine/db.js';
 import { BehaviorRegistry } from './engine/behaviors.js';
 import { ExecutionEngine } from './engine/executor.js';
 import { TriggerRegistry } from './engine/triggers.js';
-import { MetricsEngine, RecordingEngine } from './engine/metrics.js';
+import { MetricsEngine } from './engine/metrics.js';
+import { RecordingEngine } from './engine/recordings.js';
 
 export const server = new McpServer({
-  name: 'io.github.putervision/behavior-runtime-mcp',
+  name: 'io.github.putervision/behavior-mcp',
   version: getVersion(),
 });
 
@@ -171,6 +172,31 @@ server.registerResource(
           uri: uri.href,
           mimeType: 'application/json',
           text: JSON.stringify({ project, stuck_score: exec?.stuck_score || 0.0, current_status: exec?.status || 'idle' }, null, 2),
+        },
+      ],
+    };
+  }
+);
+
+server.registerResource(
+  'runtime-health',
+  'runtime:///health',
+  {
+    title: 'Behavior Runtime Health',
+    description: 'Server health status, version, and timestamp',
+    mimeType: 'application/json',
+  },
+  async (uri: URL) => {
+    return {
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: 'application/json',
+          text: JSON.stringify({
+            status: 'healthy',
+            version: getVersion(),
+            timestamp: new Date().toISOString(),
+          }, null, 2),
         },
       ],
     };

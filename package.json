@@ -1,13 +1,14 @@
 {
-  "name": "@putervision/behavior-runtime-mcp",
-  "version": "0.1.0",
-  "description": "High-frequency in-browser behavior tree execution engine for autonomous AI agents \u2014 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.",
+  "name": "@putervision/behavior-mcp",
+  "version": "0.1.1",
+  "description": "High-frequency in-browser behavior tree execution engine for autonomous AI agents — 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.",
   "keywords": [
     "mcp",
     "mcp-server",
     "model-context-protocol",
     "model-context-protocol-server",
     "behavior-tree",
+    "behavior-mcp",
     "behavior-runtime",
     "60hz",
     "in-browser-execution",
@@ -29,15 +30,15 @@
     "sqlite",
     "developer-tools"
   ],
-  "homepage": "https://github.com/putervision/behavior-runtime-mcp#readme",
+  "homepage": "https://github.com/putervision/behavior-mcp#readme",
   "bugs": {
-    "url": "https://github.com/putervision/behavior-runtime-mcp/issues"
+    "url": "https://github.com/putervision/behavior-mcp/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/putervision/behavior-runtime-mcp.git"
+    "url": "https://github.com/putervision/behavior-mcp.git"
   },
-  "mcpName": "io.github.putervision/behavior-runtime-mcp",
+  "mcpName": "io.github.putervision/behavior-mcp",
   "publishConfig": {
     "access": "public"
   },
@@ -61,7 +62,7 @@
     }
   },
   "bin": {
-    "behavior-runtime-mcp": "./dist/cli.js"
+    "behavior-mcp": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -89,6 +90,7 @@
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
+    "test:matrix": "bash scripts/test-matrix.sh",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },

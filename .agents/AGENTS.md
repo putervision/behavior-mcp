@@ -1,7 +1,7 @@
 <!-- state-memory-mcp:start -->
 # Workflow State Memory (state-memory-mcp)
 
-This project uses `state-memory-mcp` with project slug `"behavior-runtime-mcp"` to track tasks, decisions, blockers, and progress.
+This project uses `state-memory-mcp` with project slug `"behavior-mcp"` to track tasks, decisions, blockers, and progress.
 ALWAYS update the state graph when performing work.
 
 ## Mandatory Workflow
@@ -82,7 +82,7 @@ To allow cache query and ingestion commands to run automatically without prompti
 <!-- world-model-mcp:start -->
 ## Spatial World Model (world-model-mcp)
 
-This project uses `world-model-mcp` with project slug "${projectSlug}` to maintain a persistent 3D/2D spatial internal world model, entity tracking, object permanence, and movement simulation.
+This project uses `world-model-mcp` with project slug "behavior-mcp" to maintain a persistent 3D/2D spatial internal world model, entity tracking, object permanence, and movement simulation.
 
 ### 1. Mandatory Workflow & Priority
 1. **Orient & Explore**: Call `get_spatial_map(format: 'summary')` and `get_expected_view` at the start of spatial or simulated tasks.
@@ -112,3 +112,83 @@ This project uses `world-model-mcp` with project slug "${projectSlug}` to mainta
 * `generate_game_inputs`: Generate Playwright MCP automation inputs or project/unproject 3D coordinates and screen pixels.
 * `wait_for_spatial_state`: Poll and wait until an entity reaches a specific spatial condition.
 <!-- world-model-mcp:end -->
+
+<!-- behavior-mcp:start -->
+# Behavior Runtime Engine (behavior-mcp)
+
+This project uses `behavior-mcp` with project slug "behavior-mcp" to execute deterministic behavior trees at ~60Hz in browser runtimes with reactive triggers and safety guardrails.
+
+## Mandatory Runtime Workflow
+1. **Load Behavior**: Call `load_behavior(action: "load", behavior_name: "...")` to activate execution.
+2. **Monitor Execution**: Check `get_status(action: "current")` and inspect active node traversal paths.
+3. **Reactive Triggers**: Register high-priority emergency interrupts via `register_trigger(action: "register", ...)`.
+4. **Safety & Abort**: Call `abort_behavior(action: "abort")` to immediately halt execution if anomalous behavior occurs.
+
+## 10 Core MCP Tools
+- `load_behavior`: Inject and start behavior tree execution.
+- `set_parameters`: Update execution parameters on the fly.
+- `get_status`: Query active status, current node path, and tick counters.
+- `abort_behavior`: Immediately halt, pause, or resume execution.
+- `register_trigger`: Configure priority interrupts with cooldown guards.
+- `replay_recording`: Capture and replay deterministic frame actions.
+- `get_metrics`: Query execution telemetry and duration statistics.
+- `manage_behaviors`: Register and version behavior tree definitions with SHA-256 tree hashes.
+- `manage_blackboard`: Read and write behavior tree blackboard state variables.
+- `manage_runtime_db`: Database maintenance, diagnostics, and SHA-256 Merkle audit verification.
+<!-- behavior-mcp:end -->
+
+<!-- agent-reasoning-mcp:start -->
+# Strategic Agent Reasoning (agent-reasoning-mcp)
+
+This project uses `agent-reasoning-mcp` with project slug "behavior-mcp" to manage goals, decompose complex tasks, evaluate situational trade-offs, and track decision rationale.
+
+## Mandatory Reasoning Workflow
+1. **Start of planning**: Call `set_goal(action: "create", title: "...")` to establish high-level objectives.
+2. **Decomposition**: Call `set_goal(action: "decompose", parent_id: "...", subgoals: [...])` to break down into actionable steps.
+3. **Situational Trade-offs**: Call `evaluate_situation(action: "snapshot", snapshot: {...})` before selecting high-stakes actions.
+4. **Utility Configuration**: Tune agent priorities with `set_utility_weights(action: "configure", weights: {...})`.
+5. **Intention Dispatch**: Create execution directives with `manage_intentions(action: "create", ...)` for the runtime engine.
+6. **Reactive Replanning**: If an unexpected blocker occurs, invoke `replan(action: "blocker", goal_id: "...", blocker_description: "...")`.
+
+## 10 Core MCP Tools
+- `set_goal`: Manage goal hierarchy and task DAGs.
+- `evaluate_situation`: Score and rank candidate actions from environment snapshots.
+- `replan`: Adaptively reconstruct subgoals upon obstacles.
+- `assess_risk`: Quantitative threat and risk calculation.
+- `query_knowledge`: Search heuristics and past decision patterns.
+- `set_utility_weights`: Configure utility weights (aggression, caution, greed, exploration).
+- `get_decision_trace`: Explainable chain-of-thought rationale playback.
+- `manage_beliefs`: Structured belief state with exponential confidence decay.
+- `manage_intentions`: Wire contract directives queue for runtime execution.
+- `manage_reasoning_db`: Snapshots, diagnostics, and SHA-256 Merkle audit verification.
+<!-- agent-reasoning-mcp:end -->
+
+<!-- webcrypt-mcp:start -->
+# Cryptographic Vault & Security (webcrypt-mcp)
+
+This project provides native `webcrypt-mcp` tooling for zero-dependency AES-256-GCM symmetric encryption, RSA-4096 hybrid public-key encryption, digital signatures, cryptographic hashes, and post-quantum cryptography.
+
+## Mandatory Workflow
+1. **Confidential Artifacts**: Whenever saving sensitive credentials, tokens, or private workflow states, encrypt them using `encrypt_payload(mode: "data", password: "...")` or `encrypt_payload(mode: "symmetric", password: "...")`.
+2. **Key Management**: Use `manage_keys(action: "generate", type: "rsa" | "ecdh" | "hmac")` to generate cryptographically strong JWK-formatted keys for inter-agent communication.
+3. **Integrity & Signatures**: Before completing tasks that produce verifiable evidence (such as evidence packs or release binaries), compute signatures or HMAC tags using `sign_verify(action: "sign", algorithm: "ECDSA" | "HMAC")`.
+4. **Triple Memory Triad**:
+   - `state-memory-mcp`: Workflow state tracking.
+   - `vision-memory-mcp`: Visual state caching.
+   - `webcrypt-mcp`: Local database vault encryption and evidence pack cryptographic signing.
+<!-- webcrypt-mcp:end -->
+
+<!-- putervision-harness:start -->
+# PuterVision MCP Cluster & Harness Rules
+
+Active Supervised MCP Servers:
+* `putervision-harness`: pv-harness start --project test_slug
+* `state-memory-mcp`: state-memory-mcp --project test_slug
+* `vision-memory-mcp`: vision-memory-mcp --project test_slug
+* `world-model-mcp`: world-model-mcp --project test_slug
+* `agent-reasoning-mcp`: agent-reasoning-mcp --project test_slug
+* `behavior-mcp`: behavior-mcp --project test_slug
+* `test-custom`: npx -y @org/test-custom
+
+Always use `harness_start_loop` and supervise tasks via the PuterVision Harness.
+<!-- putervision-harness:end -->

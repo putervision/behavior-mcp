@@ -1,6 +1,6 @@
 ## State Memory (state-memory-mcp)
 
-This project tracks workflow state, tasks, design decisions, and blockers using `state-memory-mcp` with project slug `"behavior-runtime-mcp"`.
+This project tracks workflow state, tasks, design decisions, and blockers using `state-memory-mcp` with project slug `"behavior-mcp"`.
 
 ### 1. Priority Order
 Before doing any coding or investigation:

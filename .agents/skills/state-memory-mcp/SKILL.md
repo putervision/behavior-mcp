@@ -5,7 +5,7 @@ description: Teaches the agent to use the state-memory-mcp MCP server to track w
 
 # State Memory (state-memory-mcp) — 13 Consolidated Tools
 
-This project uses `state-memory-mcp` with project slug `"behavior-runtime-mcp"` to provide AI agents with a structured, persistent graph for tracking workflow state.
+This project uses `state-memory-mcp` with project slug `"behavior-mcp"` to provide AI agents with a structured, persistent graph for tracking workflow state.
 
 ### 1. Priority Order & Mandatory Checklist
 Before doing any coding or investigation, you MUST run this sequence:

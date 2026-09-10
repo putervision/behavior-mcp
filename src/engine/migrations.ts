@@ -9,11 +9,13 @@ export function runMigrations(db: Database.Database): void {
     );
   `);
 
-  const currentVersionRow = db.prepare("SELECT value FROM schema_meta WHERE key = 'version'").get() as { value: string } | undefined;
+  const currentVersionRow = db
+    .prepare("SELECT value FROM schema_meta WHERE key = 'version'")
+    .get() as { value: string } | undefined;
   const currentVersion = currentVersionRow ? parseInt(currentVersionRow.value, 10) : 0;
 
   if (currentVersion < 1) {
-    logger.info('Applying migration v1 for behavior-runtime-mcp...');
+    logger.info('Applying migration v1 for behavior-mcp...');
     db.exec(`
       CREATE TABLE IF NOT EXISTS behavior_definitions (
         id TEXT PRIMARY KEY,

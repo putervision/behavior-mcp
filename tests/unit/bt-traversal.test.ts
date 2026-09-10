@@ -48,7 +48,12 @@ describe('BehaviorTreeEvaluator Traversal', () => {
       id: 'inv1',
       type: 'inverter',
       children: [
-        { id: 'cond_timer', type: 'condition', name: 'timer_elapsed', parameters: { threshold_ticks: 100 } },
+        {
+          id: 'cond_timer',
+          type: 'condition',
+          name: 'timer_elapsed',
+          parameters: { threshold_ticks: 100 },
+        },
       ],
     };
 

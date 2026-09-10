@@ -6,7 +6,7 @@
         "run"
       ],
       "env": {
-        "STATE_MEMORY_MCP_PROJECT": "behavior-runtime-mcp"
+        "STATE_MEMORY_MCP_PROJECT": "behavior-mcp"
       }
     },
     "vision-memory-mcp": {
@@ -24,7 +24,33 @@
         "run"
       ],
       "env": {
-        "WORLD_MODEL_MCP_PROJECT": "behavior-runtime-mcp"
+        "WORLD_MODEL_MCP_PROJECT": "behavior-mcp"
+      }
+    },
+    "webcrypt": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "webcrypt",
+        "mcp"
+      ]
+    },
+    "behavior-mcp": {
+      "command": "behavior-mcp",
+      "args": [
+        "run"
+      ],
+      "env": {
+        "BEHAVIOR_PROJECT": "behavior-mcp"
+      }
+    },
+    "agent-reasoning-mcp": {
+      "command": "agent-reasoning-mcp",
+      "args": [
+        "run"
+      ],
+      "env": {
+        "REASONING_PROJECT": "behavior-mcp"
       }
     }
   }

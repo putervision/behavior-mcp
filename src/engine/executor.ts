@@ -16,6 +16,7 @@ export class ExecutionEngine {
       behavior_version?: number;
       session_id?: string;
       intention_id?: string;
+      trace_id?: string;
       parameters?: Record<string, unknown>;
       client_request_id?: string;
     }
@@ -29,13 +30,15 @@ export class ExecutionEngine {
     const id = generateId() as ExecutionId;
     const now = getCurrentIsoString();
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO execution_state (
         id, project, behavior_name, behavior_version, session_id, intention_id,
         status, active_node_path, blackboard_json, current_tick, tick_rate_hz,
         duration_ms, stuck_score, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, 'running', 'root', ?, 0, 60, 0, 0.0, ?, ?)
-    `).run(
+    `
+    ).run(
       id,
       params.project,
       behavior.name,
@@ -52,7 +55,11 @@ export class ExecutionEngine {
       entity_id: id,
       entity_type: 'execution',
       action: 'start',
-      details: { behavior_name: behavior.name, intention_id: params.intention_id },
+      details: {
+        behavior_name: behavior.name,
+        intention_id: params.intention_id,
+        trace_id: params.trace_id,
+      },
     });
 
     return {
@@ -62,6 +69,7 @@ export class ExecutionEngine {
       behavior_version: behavior.version,
       session_id: params.session_id,
       intention_id: params.intention_id,
+      trace_id: params.trace_id,
       status: 'running',
       active_node_path: 'root',
       blackboard_json: safeJsonStringify(params.parameters || {}),
@@ -92,14 +100,18 @@ export class ExecutionEngine {
     const status = params.status || current.status;
     const nodePath = params.active_node_path || current.active_node_path;
     const stuckScore = params.stuck_score !== undefined ? params.stuck_score : current.stuck_score;
-    const bbJson = params.blackboard ? safeJsonStringify(params.blackboard) : current.blackboard_json;
+    const bbJson = params.blackboard
+      ? safeJsonStringify(params.blackboard)
+      : current.blackboard_json;
 
-    db.prepare(`
+    db.prepare(
+      `
       UPDATE execution_state SET
         current_tick = ?, duration_ms = ?, status = ?, active_node_path = ?,
         stuck_score = ?, blackboard_json = ?, updated_at = ?
       WHERE id = ?
-    `).run(newTick, durationMs, status, nodePath, stuckScore, bbJson, now, current.id);
+    `
+    ).run(newTick, durationMs, status, nodePath, stuckScore, bbJson, now, current.id);
 
     return {
       ...current,
@@ -125,11 +137,13 @@ export class ExecutionEngine {
     const current = this.getExecution(db, { project: params.project, id: params.execution_id });
     const now = getCurrentIsoString();
 
-    db.prepare(`
+    db.prepare(
+      `
       UPDATE execution_state SET
         status = ?, error = ?, updated_at = ?
       WHERE id = ?
-    `).run(params.status, params.error_message ?? null, now, current.id);
+    `
+    ).run(params.status, params.error_message ?? null, now, current.id);
 
     logRuntimeEvent(db, {
       project: params.project,
@@ -152,8 +166,13 @@ export class ExecutionEngine {
     };
   }
 
-  static getExecution(db: Database.Database, params: { project: string; id: string }): ExecutionState {
-    const row = db.prepare('SELECT * FROM execution_state WHERE project = ? AND id = ?').get(params.project, params.id) as any;
+  static getExecution(
+    db: Database.Database,
+    params: { project: string; id: string }
+  ): ExecutionState {
+    const row = db
+      .prepare('SELECT * FROM execution_state WHERE project = ? AND id = ?')
+      .get(params.project, params.id) as any;
     if (!row) throw new NotFoundError(`Execution instance "${params.id}" not found.`);
     return this.mapRowToExecution(row);
   }

@@ -1,6 +1,6 @@
-# Agent Instructions for behavior-runtime-mcp
+# Agent Instructions for behavior-mcp
 
-This project uses `@putervision/behavior-runtime-mcp` for high-frequency in-browser behavior execution.
+This project uses `@putervision/behavior-mcp` for high-frequency in-browser behavior execution.
 
 ## Mandatory Workflow
 1. **Load**: Activate behavior trees via `load_behavior(load)`.

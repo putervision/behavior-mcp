@@ -1,0 +1,88 @@
+{
+  "id": "dungeon_crawler",
+  "name": "Dungeon Crawler Auto-Explorer",
+  "type": "selector",
+  "description": "Explores dungeon rooms, engages enemies in range with spell rotations, gathers nearby loot, and preempts for emergency healing when HP is low.",
+  "children": [
+    {
+      "id": "emergency_survival",
+      "type": "guard",
+      "name": "hp_below",
+      "parameters": {
+        "threshold": 30
+      },
+      "children": [
+        {
+          "id": "drink_heal_potion",
+          "type": "action",
+          "name": "heal",
+          "parameters": {
+            "item_name": "Health Potion",
+            "cooldown_ms": 2000
+          }
+        }
+      ]
+    },
+    {
+      "id": "combat_engagement",
+      "type": "guard",
+      "name": "enemy_in_range",
+      "parameters": {
+        "max_range": 15
+      },
+      "children": [
+        {
+          "id": "combat_sequence",
+          "type": "sequence",
+          "children": [
+            {
+              "id": "cast_opener_spell",
+              "type": "action",
+              "name": "cast_spell",
+              "parameters": {
+                "spell_name": "Fireball",
+                "target": "nearest_enemy"
+              }
+            },
+            {
+              "id": "attack_melee",
+              "type": "action",
+              "name": "attack_nearest",
+              "parameters": {
+                "stance": "aggressive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loot_gathering",
+      "type": "sequence",
+      "children": [
+        {
+          "id": "collect_dropped_loot",
+          "type": "action",
+          "name": "gather",
+          "parameters": {
+            "resource_type": "loot_chest"
+          }
+        }
+      ]
+    },
+    {
+      "id": "room_exploration",
+      "type": "sequence",
+      "children": [
+        {
+          "id": "patrol_room_waypoints",
+          "type": "action",
+          "name": "patrol_area",
+          "parameters": {
+            "pattern": "perimeter"
+          }
+        }
+      ]
+    }
+  ]
+}

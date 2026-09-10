@@ -76,8 +76,38 @@ export class BehaviorTreeEvaluator {
         return childRes;
       }
 
+      case 'guard': {
+        if (node.guard) {
+          const guardRes = this.evaluateNode(node.guard, `${path}/guard_cond`, ctx);
+          if (guardRes.status !== 'SUCCESS') {
+            return { status: 'FAILURE', activePath: guardRes.activePath };
+          }
+        } else if (node.name) {
+          const condFn = ConditionRegistry[node.name] || GameConditionRegistry[node.name];
+          const passed = condFn ? condFn(node.parameters || {}, ctx) : true;
+          if (!passed) {
+            return { status: 'FAILURE', activePath: `${path}/guard_cond` };
+          }
+        }
+        if (!node.children || node.children.length === 0) return { status: 'SUCCESS', activePath: path };
+        return this.evaluateNode(node.children[0], `${path}/guard_child`, ctx);
+      }
+
+      case 'timeout': {
+        const timeoutMs = node.timeout_ms || (node.parameters?.timeout_ms as number) || 5000;
+        const currentElapsedMs =
+          (ctx.telemetry?.tick_duration_ms as number) !== undefined
+            ? (ctx.telemetry.tick_duration_ms as number)
+            : (ctx.tick || 1) * 16.6;
+        if (currentElapsedMs > timeoutMs) {
+          return { status: 'FAILURE', activePath: `${path}/timeout_exceeded` };
+        }
+        if (!node.children || node.children.length === 0) return { status: 'SUCCESS', activePath: path };
+        return this.evaluateNode(node.children[0], `${path}/timeout_child`, ctx);
+      }
+
       default:
-        return { status: 'SUCCESS', activePath: path };
+        throw new Error(`Unknown behavior tree node type: "${(node as any)?.type}" at path "${path}". Fail-closed enforced.`);
     }
   }
 }

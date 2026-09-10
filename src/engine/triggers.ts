@@ -28,7 +28,8 @@ export class TriggerRegistry {
     const priority = params.priority !== undefined ? params.priority : 0.5;
     const cooldown_ms = params.cooldown_ms !== undefined ? params.cooldown_ms : 1000;
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO triggers (
         id, project, name, behavior_name, condition_type, condition_params_json,
         priority, cooldown_ms, is_enabled, created_at, updated_at
@@ -40,7 +41,19 @@ export class TriggerRegistry {
         priority = excluded.priority,
         cooldown_ms = excluded.cooldown_ms,
         updated_at = excluded.updated_at
-    `).run(id, params.project, params.name, params.behavior_name, params.condition_type, safeJsonStringify(params.condition_params || {}), priority, cooldown_ms, now, now);
+    `
+    ).run(
+      id,
+      params.project,
+      params.name,
+      params.behavior_name,
+      params.condition_type,
+      safeJsonStringify(params.condition_params || {}),
+      priority,
+      cooldown_ms,
+      now,
+      now
+    );
 
     logRuntimeEvent(db, {
       project: params.project,
@@ -66,7 +79,9 @@ export class TriggerRegistry {
   }
 
   static listTriggers(db: Database.Database, project: string): ReactiveTrigger[] {
-    const rows = db.prepare('SELECT * FROM triggers WHERE project = ? ORDER BY priority DESC, name ASC').all(project) as any[];
+    const rows = db
+      .prepare('SELECT * FROM triggers WHERE project = ? ORDER BY priority DESC, name ASC')
+      .all(project) as any[];
     return rows.map((r) => this.mapRowToTrigger(r));
   }
 
@@ -94,7 +109,11 @@ export class TriggerRegistry {
       }
 
       if (matches) {
-        db.prepare('UPDATE triggers SET last_fired_at = ?, updated_at = ? WHERE id = ?').run(new Date(now).toISOString(), new Date(now).toISOString(), trig.id);
+        db.prepare('UPDATE triggers SET last_fired_at = ?, updated_at = ? WHERE id = ?').run(
+          new Date(now).toISOString(),
+          new Date(now).toISOString(),
+          trig.id
+        );
         return trig;
       }
     }

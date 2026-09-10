@@ -9,7 +9,7 @@ export interface PathConfig {
 
 export function getDefaultAllowedDirs(projectRoot: string): string[] {
   const resolvedRoot = path.resolve(projectRoot);
-  const homeBackups = path.join(os.homedir(), '.behavior-runtime-mcp', 'backups');
+  const homeBackups = path.join(os.homedir(), '.behavior-mcp', 'backups');
   return [resolvedRoot, homeBackups];
 }
 

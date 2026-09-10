@@ -1,9 +1,12 @@
-.state-memory-mcp
-
-# vision-memory-mcp local database
-.vision-memory-mcp/
+node_modules
+dist
+coverage
+*.tsbuildinfo
 .env
 
+.state-memory-mcp
+.vision-memory-mcp
 .world-model-mcp
-
-node_modules
+.behavior-mcp
+.behavior-runtime-mcp
+.agent-reasoning-mcp

@@ -13,14 +13,15 @@ import { getVersion } from './utils/version.js';
 
 function showHelp() {
   console.log(`
-behavior-runtime-mcp CLI Tool v${getVersion()}
+behavior-mcp CLI Tool v${getVersion()}
 
 Usage:
-  behavior-runtime-mcp <command> [options]
+  behavior-mcp <command> [options]
 
 Commands:
   run                Start the MCP server on stdio transport (Default)
   init               Scaffold the workspace, database, seed behaviors, and IDE agent rules
+  init-global        Re-initialize across all projects registered in ~/.behavior-mcp/projects.json
   doctor             Run environment and database health checks
   inspect            Display tables of behaviors, active execution, and triggers
   audit              Audit cryptographic SHA-256 event ledger hash chain
@@ -35,24 +36,34 @@ Options:
 }
 
 async function main() {
-  const args = process.argv.slice(2);
-  const command = args[0] || 'run';
+  const rawArgs = process.argv.slice(2);
 
-  if (args.includes('--help') || args.includes('-h')) {
+  if (rawArgs.includes('--help') || rawArgs.includes('-h')) {
     showHelp();
     process.exit(0);
   }
 
-  if (args.includes('--version') || args.includes('-v')) {
+  if (rawArgs.includes('--version') || rawArgs.includes('-v')) {
     console.log(getVersion());
     process.exit(0);
   }
 
   let project: string | undefined;
-  const pIndex = args.findIndex((a) => a === '-p' || a === '--project');
-  if (pIndex !== -1 && args[pIndex + 1]) {
-    project = args[pIndex + 1];
+  const pIndex = rawArgs.findIndex((a) => a === '-p' || a === '--project');
+  if (pIndex !== -1 && rawArgs[pIndex + 1]) {
+    project = rawArgs[pIndex + 1];
   }
+
+  // Filter out options and their paired values for command determination
+  const positional = rawArgs.filter((a, idx) => {
+    if (a.startsWith('-')) return false;
+    if (idx > 0 && (rawArgs[idx - 1] === '-p' || rawArgs[idx - 1] === '--project' || rawArgs[idx - 1] === '-o' || rawArgs[idx - 1] === '--out')) {
+      return false;
+    }
+    return true;
+  });
+
+  const command = positional[0] || 'run';
 
   switch (command) {
     case 'run': {
@@ -62,6 +73,12 @@ async function main() {
 
     case 'init': {
       runInit({ project });
+      break;
+    }
+
+    case 'init-global': {
+      const { runInitGlobal } = await import('./cli/init.js');
+      await runInitGlobal();
       break;
     }
 
@@ -83,6 +100,34 @@ async function main() {
         console.error(`✖ Doctor check failed: ${err.message}`);
         process.exit(1);
       }
+      break;
+    }
+
+    case 'doctor-global': {
+      const { getRegistry } = await import('./engine/db.js');
+      const registry = getRegistry();
+      const entries = Object.entries(registry);
+      console.log(`Running global diagnostic doctor across ${entries.length} registered project(s)...`);
+      let allPassed = true;
+
+      for (const [slug, projectRoot] of entries) {
+        if (!fs.existsSync(projectRoot)) {
+          console.log(`⚠️  ${slug}: Missing project root directory (${projectRoot})`);
+          continue;
+        }
+        try {
+          const db = getDb(slug, projectRoot);
+          const integrity = db.pragma('integrity_check');
+          const eventAudit = verifyEventChain(db, slug);
+          const ok = integrity && eventAudit.valid;
+          console.log(`  ${ok ? '✔' : '✖'} ${slug}: ${ok ? 'HEALTHY' : 'ANOMALY DETECTED'}`);
+          if (!ok) allPassed = false;
+        } catch (err: any) {
+          console.log(`  ✖ ${slug}: ${err.message}`);
+          allPassed = false;
+        }
+      }
+      console.log(`\nGlobal doctor check ${allPassed ? 'PASSED' : 'COMPLETED WITH WARNINGS'}.`);
       break;
     }
 
@@ -114,7 +159,7 @@ async function main() {
     }
 
     case 'update': {
-      console.log(`@putervision/behavior-runtime-mcp is up to date (v${getVersion()}).`);
+      console.log(`@putervision/behavior-mcp is up to date (v${getVersion()}).`);
       break;
     }
 

@@ -1,0 +1,69 @@
+{
+  "id": "resource_gatherer",
+  "name": "Autonomous Resource Gatherer",
+  "type": "selector",
+  "description": "Patrols gathering route, harvests ore and wood nodes, monitors inventory capacity, and returns to base bank to deposit items.",
+  "children": [
+    {
+      "id": "bank_deposit_when_full",
+      "type": "guard",
+      "name": "resource_above",
+      "parameters": {
+        "resource": "inventory_weight",
+        "threshold": 90
+      },
+      "children": [
+        {
+          "id": "return_to_bank_and_deposit",
+          "type": "sequence",
+          "children": [
+            {
+              "id": "navigate_to_bank",
+              "type": "action",
+              "name": "move_to",
+              "parameters": {
+                "target": "town_bank"
+              }
+            },
+            {
+              "id": "deposit_inventory_items",
+              "type": "action",
+              "name": "interact",
+              "parameters": {
+                "action": "deposit_all"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "harvest_resource_node",
+      "type": "sequence",
+      "children": [
+        {
+          "id": "harvest_node_action",
+          "type": "action",
+          "name": "gather",
+          "parameters": {
+            "resource_type": "mining_node"
+          }
+        }
+      ]
+    },
+    {
+      "id": "patrol_harvest_route",
+      "type": "sequence",
+      "children": [
+        {
+          "id": "patrol_waypoint_loop",
+          "type": "action",
+          "name": "patrol_area",
+          "parameters": {
+            "route": "mountain_route_alpha"
+          }
+        }
+      ]
+    }
+  ]
+}

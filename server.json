@@ -1,16 +1,16 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.putervision/behavior-runtime-mcp",
-  "version": "0.1.0",
+  "name": "io.github.putervision/behavior-mcp",
+  "version": "0.1.1",
   "title": "Behavior Runtime MCP",
-  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety.",
+  "description": "High-frequency in-browser behavior tree runtime for AI agents — 60Hz tick loops and reactive triggers.",
   "publisher": "PuterVision",
   "license": "MIT",
-  "websiteUrl": "https://putervision.com",
+  "websiteUrl": "https://behaviormcp.com",
   "status": "active",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/putervision/behavior-runtime-mcp/main/docs/behavior-icon.png",
+      "src": "https://putervision.github.io/behavior-mcp/behavior-icon.png",
       "sizes": [
         "512x512"
       ],
@@ -19,21 +19,21 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/putervision/behavior-runtime-mcp",
+    "url": "https://github.com/putervision/behavior-mcp",
     "source": "github"
   },
   "bugs": {
-    "url": "https://github.com/putervision/behavior-runtime-mcp/issues"
+    "url": "https://github.com/putervision/behavior-mcp/issues"
   },
   "packages": [
     {
       "registryType": "npm",
-      "identifier": "@putervision/behavior-runtime-mcp",
-      "version": "0.1.0",
+      "identifier": "@putervision/behavior-mcp",
+      "version": "0.1.1",
       "transport": {
         "type": "stdio"
       },
-      "executable": "behavior-runtime-mcp",
+      "executable": "behavior-mcp",
       "args": [
         "run"
       ]

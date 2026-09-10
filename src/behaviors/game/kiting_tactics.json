@@ -1,0 +1,68 @@
+{
+  "id": "kiting_tactics",
+  "name": "Tactical Ranged Kiting",
+  "type": "selector",
+  "description": "Maintains optimal combat distance from enemies, backpedals when threatened, and casts ranged spells during retreat.",
+  "children": [
+    {
+      "id": "too_close_retreat",
+      "type": "guard",
+      "name": "enemy_in_range",
+      "parameters": {
+        "max_range": 6
+      },
+      "children": [
+        {
+          "id": "backpedal_and_slow",
+          "type": "sequence",
+          "children": [
+            {
+              "id": "cast_frost_nova",
+              "type": "action",
+              "name": "cast_spell",
+              "parameters": {
+                "spell_name": "Frost Nova",
+                "target": "nearest_enemy"
+              }
+            },
+            {
+              "id": "retreat_action",
+              "type": "action",
+              "name": "flee_to_safety",
+              "parameters": {
+                "safe_distance": 15
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ranged_dps_rotation",
+      "type": "guard",
+      "name": "enemy_in_range",
+      "parameters": {
+        "max_range": 25
+      },
+      "children": [
+        {
+          "id": "cast_ranged_shot",
+          "type": "action",
+          "name": "cast_spell",
+          "parameters": {
+            "spell_name": "Arcane Bolt",
+            "target": "nearest_enemy"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hold_defensive_position",
+      "type": "action",
+      "name": "idle",
+      "parameters": {
+        "duration_ms": 100
+      }
+    }
+  ]
+}

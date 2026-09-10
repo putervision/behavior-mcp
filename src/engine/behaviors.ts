@@ -41,7 +41,8 @@ export class BehaviorRegistry {
     const now = getCurrentIsoString();
     const id = generateId() as BehaviorId;
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO behavior_definitions (
         id, project, name, version, description, tree_json, tree_hash,
         is_active, client_request_id, created_at
@@ -51,7 +52,18 @@ export class BehaviorRegistry {
         tree_json = excluded.tree_json,
         tree_hash = excluded.tree_hash,
         created_at = excluded.created_at
-    `).run(id, params.project, params.name, version, params.description ?? null, treeJson, treeHash, params.client_request_id ?? null, now);
+    `
+    ).run(
+      id,
+      params.project,
+      params.name,
+      version,
+      params.description ?? null,
+      treeJson,
+      treeHash,
+      params.client_request_id ?? null,
+      now
+    );
 
     logRuntimeEvent(db, {
       project: params.project,
@@ -90,12 +102,19 @@ export class BehaviorRegistry {
     }
 
     const row = db.prepare(sql).get(...sqlParams) as any;
-    if (!row) throw new NotFoundError(`Behavior "${params.name}" (v${params.version || 'latest'}) not found.`);
+    if (!row)
+      throw new NotFoundError(
+        `Behavior "${params.name}" (v${params.version || 'latest'}) not found.`
+      );
     return this.mapRowToBehavior(row);
   }
 
   static listBehaviors(db: Database.Database, project: string): BehaviorDefinition[] {
-    const rows = db.prepare('SELECT * FROM behavior_definitions WHERE project = ? ORDER BY name ASC, version DESC').all(project) as any[];
+    const rows = db
+      .prepare(
+        'SELECT * FROM behavior_definitions WHERE project = ? ORDER BY name ASC, version DESC'
+      )
+      .all(project) as any[];
     return rows.map((r) => this.mapRowToBehavior(r));
   }
 
