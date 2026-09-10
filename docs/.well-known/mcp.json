@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.putervision/behavior-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "title": "Behavior MCP",
-  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety.",
+  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety guardrails.",
   "publisher": "PuterVision",
   "license": "MIT",
   "websiteUrl": "https://behaviormcp.com",
@@ -16,7 +16,7 @@
     {
       "registryType": "npm",
       "identifier": "@putervision/behavior-mcp",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "transport": {
         "type": "stdio"
       },

@@ -2,13 +2,13 @@
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "name": "behavior-mcp",
   "title": "Behavior MCP",
-  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety.",
+  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety guardrails.",
   "maintainers": [
     "putervision"
   ],
   "author": "PuterVision",
   "license": "MIT",
-  "homepage": "https://putervision.com",
+  "homepage": "https://behaviormcp.com",
   "repository": "https://github.com/putervision/behavior-mcp",
   "categories": [
     "developer-tools",

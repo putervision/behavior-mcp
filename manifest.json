@@ -1,12 +1,12 @@
 {
   "manifest_version": "0.2",
   "name": "@putervision/behavior-mcp",
-  "version": "0.1.1",
-  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety.",
+  "version": "0.1.2",
+  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety guardrails.",
   "author": {
     "name": "PuterVision"
   },
-  "homepage": "https://github.com/putervision/behavior-mcp#readme",
+  "homepage": "https://behaviormcp.com",
   "server": {
     "type": "node",
     "entry_point": "./dist/index.js",
