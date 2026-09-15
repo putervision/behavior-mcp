@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.2",
   "name": "@putervision/behavior-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and safety guardrails.",
   "author": {
     "name": "PuterVision"

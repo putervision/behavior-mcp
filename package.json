@@ -1,6 +1,6 @@
 {
   "name": "@putervision/behavior-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "High-frequency in-browser behavior tree execution engine for autonomous AI agents — 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.",
   "keywords": [
     "mcp",
@@ -92,7 +92,9 @@
     "test:integration": "vitest run tests/integration",
     "test:matrix": "bash scripts/test-matrix.sh",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "version:check": "node scripts/sync-version.mjs --check",
+    "version:sync": "node scripts/sync-version.mjs"
   },
   "peerDependencies": {
     "playwright": "^1.40.0"

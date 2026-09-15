@@ -4,6 +4,8 @@ import { GameConditionRegistry } from './conditions-game.js';
 import { ActionRegistry } from './actions.js';
 import { GameActionRegistry } from './actions-game.js';
 
+const MAX_TREE_DEPTH = 64;
+
 export class BehaviorTreeEvaluator {
   private tree: BehaviorTreeNode;
   private blackboard: Record<string, unknown>;
@@ -22,7 +24,7 @@ export class BehaviorTreeEvaluator {
       tick: this.tickCount,
     };
 
-    const res = this.evaluateNode(this.tree, 'root', ctx);
+    const res = this.evaluateNode(this.tree, 'root', ctx, 0);
     return {
       status: res.status,
       activePath: res.activePath,
@@ -30,13 +32,17 @@ export class BehaviorTreeEvaluator {
     };
   }
 
-  private evaluateNode(node: BehaviorTreeNode, path: string, ctx: any): { status: NodeStatus; activePath: string } {
+  private evaluateNode(node: BehaviorTreeNode, path: string, ctx: any, depth = 0): { status: NodeStatus; activePath: string } {
+    if (depth > MAX_TREE_DEPTH) {
+      return { status: 'FAILURE', activePath: `${path}/depth_exceeded` };
+    }
+
     switch (node.type) {
       case 'sequence': {
         const children = node.children || [];
         for (let i = 0; i < children.length; i++) {
           const childPath = `${path}/seq_${i}_${children[i].type}`;
-          const childRes = this.evaluateNode(children[i], childPath, ctx);
+          const childRes = this.evaluateNode(children[i], childPath, ctx, depth + 1);
           if (childRes.status !== 'SUCCESS') {
             return { status: childRes.status, activePath: childRes.activePath };
           }
@@ -48,7 +54,7 @@ export class BehaviorTreeEvaluator {
         const children = node.children || [];
         for (let i = 0; i < children.length; i++) {
           const childPath = `${path}/sel_${i}_${children[i].type}`;
-          const childRes = this.evaluateNode(children[i], childPath, ctx);
+          const childRes = this.evaluateNode(children[i], childPath, ctx, depth + 1);
           if (childRes.status !== 'FAILURE') {
             return { status: childRes.status, activePath: childRes.activePath };
           }
@@ -70,7 +76,7 @@ export class BehaviorTreeEvaluator {
 
       case 'inverter': {
         if (!node.children || node.children.length === 0) return { status: 'SUCCESS', activePath: path };
-        const childRes = this.evaluateNode(node.children[0], `${path}/inv`, ctx);
+        const childRes = this.evaluateNode(node.children[0], `${path}/inv`, ctx, depth + 1);
         if (childRes.status === 'SUCCESS') return { status: 'FAILURE', activePath: childRes.activePath };
         if (childRes.status === 'FAILURE') return { status: 'SUCCESS', activePath: childRes.activePath };
         return childRes;
@@ -78,7 +84,7 @@ export class BehaviorTreeEvaluator {
 
       case 'guard': {
         if (node.guard) {
-          const guardRes = this.evaluateNode(node.guard, `${path}/guard_cond`, ctx);
+          const guardRes = this.evaluateNode(node.guard, `${path}/guard_cond`, ctx, depth + 1);
           if (guardRes.status !== 'SUCCESS') {
             return { status: 'FAILURE', activePath: guardRes.activePath };
           }
@@ -90,7 +96,7 @@ export class BehaviorTreeEvaluator {
           }
         }
         if (!node.children || node.children.length === 0) return { status: 'SUCCESS', activePath: path };
-        return this.evaluateNode(node.children[0], `${path}/guard_child`, ctx);
+        return this.evaluateNode(node.children[0], `${path}/guard_child`, ctx, depth + 1);
       }
 
       case 'timeout': {
@@ -103,7 +109,7 @@ export class BehaviorTreeEvaluator {
           return { status: 'FAILURE', activePath: `${path}/timeout_exceeded` };
         }
         if (!node.children || node.children.length === 0) return { status: 'SUCCESS', activePath: path };
-        return this.evaluateNode(node.children[0], `${path}/timeout_child`, ctx);
+        return this.evaluateNode(node.children[0], `${path}/timeout_child`, ctx, depth + 1);
       }
 
       default:

@@ -57,6 +57,7 @@ export function runMigrations(db: Database.Database): void {
       CREATE INDEX IF NOT EXISTS idx_execution_project ON execution_state(project);
       CREATE INDEX IF NOT EXISTS idx_execution_status ON execution_state(project, status);
       CREATE INDEX IF NOT EXISTS idx_execution_intention ON execution_state(intention_id);
+      CREATE INDEX IF NOT EXISTS idx_execution_proj_status_time ON execution_state(project, status, updated_at);
 
       CREATE TABLE IF NOT EXISTS triggers (
         id TEXT PRIMARY KEY,
@@ -98,6 +99,7 @@ export function runMigrations(db: Database.Database): void {
       CREATE INDEX IF NOT EXISTS idx_metrics_project ON execution_metrics(project);
       CREATE INDEX IF NOT EXISTS idx_metrics_execution ON execution_metrics(execution_id);
       CREATE INDEX IF NOT EXISTS idx_metrics_behavior ON execution_metrics(project, behavior_name);
+      CREATE INDEX IF NOT EXISTS idx_metrics_proj_exec_time ON execution_metrics(project, execution_id, created_at);
 
       CREATE TABLE IF NOT EXISTS recordings (
         id TEXT PRIMARY KEY,
@@ -144,4 +146,10 @@ export function runMigrations(db: Database.Database): void {
       ON CONFLICT(key) DO UPDATE SET value = '1';
     `);
   }
+
+  // Ensure performance composite indexes exist on already-migrated v1 databases
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_execution_proj_status_time ON execution_state(project, status, updated_at);
+    CREATE INDEX IF NOT EXISTS idx_metrics_proj_exec_time ON execution_metrics(project, execution_id, created_at);
+  `);
 }
