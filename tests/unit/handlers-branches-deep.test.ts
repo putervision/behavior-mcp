@@ -31,11 +31,13 @@ describe('behavior-mcp Handlers & Executor Deep Branches', () => {
     vi.spyOn(dbModule, 'getDb').mockReturnValue(db);
     vi.spyOn(dbModule, 'getReadOnlyDb').mockReturnValue(db);
     vi.spyOn(dbModule, 'getProjectSlug').mockReturnValue(project);
+    process.env.BEHAVIOR_MCP_PROJECT = project;
 
     registerAllTools(mockServer as any);
   });
 
   afterEach(() => {
+    delete process.env.BEHAVIOR_MCP_PROJECT;
     vi.restoreAllMocks();
     db.close();
   });
@@ -199,9 +201,9 @@ describe('behavior-mcp Handlers & Executor Deep Branches', () => {
   });
 
   describe('Execution Engine Direct Ticking & Swapping', () => {
-    it('should tick and swap execution state directly', () => {
+    it('should tick and swap execution state directly', async () => {
       const manageBehaviors = toolMap.get('manage_behaviors')!;
-      manageBehaviors({
+      await manageBehaviors({
         action: 'register',
         name: 'tick_tree',
         tree: { type: 'action', name: 'log' },

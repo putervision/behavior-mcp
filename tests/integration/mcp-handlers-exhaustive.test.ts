@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Database from 'better-sqlite3';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerAllTools } from '../../src/tools/handlers.js';
 import { runMigrations } from '../../src/engine/migrations.js';
 import { EmergencySafety } from '../../src/engine/safety.js';
@@ -27,11 +26,13 @@ describe('behavior-mcp Exhaustive MCP Handlers Integration Test Suite', () => {
     vi.spyOn(dbModule, 'getDb').mockReturnValue(db);
     vi.spyOn(dbModule, 'getReadOnlyDb').mockReturnValue(db);
     vi.spyOn(dbModule, 'getProjectSlug').mockReturnValue(project);
+    process.env.BEHAVIOR_MCP_PROJECT = project;
 
     registerAllTools(mockServer as any);
   });
 
   afterEach(() => {
+    delete process.env.BEHAVIOR_MCP_PROJECT;
     vi.restoreAllMocks();
     db.close();
   });
@@ -187,5 +188,46 @@ describe('behavior-mcp Exhaustive MCP Handlers Integration Test Suite', () => {
     expect(res.isError).toBe(true);
     const errData = JSON.parse(res.content[0].text);
     expect(errData.error).toContain('PolicyGate blocked');
+  });
+
+  it('synthesizes behavior tree and executes unstick recovery', async () => {
+    const manageBehaviors = toolMap.get('manage_behaviors')!;
+    const synthRes = await manageBehaviors({
+      action: 'synthesize',
+      name: 'synth_test_loop',
+      strategy: 'sequence',
+      steps: [
+        'inspect_surroundings',
+        'navigate_target',
+        { name: 'interact_object', parameters: { mode: 'touch' } },
+      ],
+    });
+    expect(synthRes.isError).toBeUndefined();
+    const synthData = JSON.parse(synthRes.content[0].text);
+    expect(synthData.name).toBe('synth_test_loop');
+    expect(synthData.synthesized).toBe(true);
+    expect(synthData.node_count).toBe(4);
+    expect(synthData.tree_hash).toBeDefined();
+
+    // Load synthesized behavior
+    const loadBehavior = toolMap.get('load_behavior')!;
+    const loadRes = await loadBehavior({
+      action: 'load',
+      behavior_name: 'synth_test_loop',
+    });
+    const loadData = JSON.parse(loadRes.content[0].text);
+    expect(loadData.status).toBe('running');
+
+    // Perform unstick recovery
+    const abortBehavior = toolMap.get('abort_behavior')!;
+    const unstickRes = await abortBehavior({
+      action: 'unstick',
+      execution_id: loadData.id,
+      reason: 'Testing unstick recovery',
+    });
+    expect(unstickRes.isError).toBeUndefined();
+    const unstickData = JSON.parse(unstickRes.content[0].text);
+    expect(unstickData.unstick_recovered).toBe(true);
+    expect(unstickData.status).toBe('aborted');
   });
 });

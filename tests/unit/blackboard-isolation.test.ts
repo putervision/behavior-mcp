@@ -99,4 +99,70 @@ describe('Blackboard Concurrency & Isolation Suite', () => {
     expect(stateB.target_id).toBe('TARGET_BETA');
     expect(stateA.target_id).not.toBe(stateB.target_id);
   });
+
+  it('supports delete, list, and lease operations on execution blackboard', () => {
+    const tree = { id: 't_verbs', type: 'action' as const, name: 'verbs_action' };
+    BehaviorRegistry.registerBehavior(db, { project, name: 'verbs_behavior', tree });
+    const exec = ExecutionEngine.startExecution(db, { project, behavior_name: 'verbs_behavior' });
+
+    // 1. set and list
+    BlackboardEngine.setBlackboardKey(db, {
+      project,
+      execution_id: exec.id,
+      key: 'status',
+      value: 'running',
+    });
+    BlackboardEngine.setBlackboardKey(db, {
+      project,
+      execution_id: exec.id,
+      key: 'tick',
+      value: 42,
+    });
+
+    const listRes = BlackboardEngine.listBlackboard(db, { project, execution_id: exec.id });
+    expect(listRes.keys).toContain('status');
+    expect(listRes.keys).toContain('tick');
+    expect(listRes.count).toBe(2);
+
+    // 2. lease
+    const lease1 = BlackboardEngine.leaseBlackboard(db, {
+      project,
+      execution_id: exec.id,
+      key: 'status',
+      agent_id: 'agent_alpha',
+      duration_seconds: 30,
+      mode: 'acquire',
+    });
+    expect(lease1.success).toBe(true);
+    expect(lease1.expires_at).toBeDefined();
+
+    // Conflicting lease
+    const leaseConflict = BlackboardEngine.leaseBlackboard(db, {
+      project,
+      execution_id: exec.id,
+      key: 'status',
+      agent_id: 'agent_beta',
+      mode: 'acquire',
+    });
+    expect(leaseConflict.success).toBe(false);
+
+    // Release lease
+    const leaseRelease = BlackboardEngine.leaseBlackboard(db, {
+      project,
+      execution_id: exec.id,
+      key: 'status',
+      agent_id: 'agent_alpha',
+      mode: 'release',
+    });
+    expect(leaseRelease.success).toBe(true);
+
+    // 3. delete
+    const delRes = BlackboardEngine.deleteBlackboardKey(db, {
+      project,
+      execution_id: exec.id,
+      key: 'tick',
+    });
+    expect(delRes.success).toBe(true);
+    expect(delRes.remaining_keys).not.toContain('tick');
+  });
 });

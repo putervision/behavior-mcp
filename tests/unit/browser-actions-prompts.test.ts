@@ -5,7 +5,7 @@ import { ConditionRegistry } from '../../src/engine/browser/conditions.js';
 import { GameConditionRegistry } from '../../src/engine/browser/conditions-game.js';
 import { BrowserInjector } from '../../src/engine/browser/injector.js';
 import { RuntimeContext } from '../../src/engine/browser/node-types.js';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { NativeMcpServer } from '../../src/transport/native-mcp.js';
 import { registerAllPrompts } from '../../src/tools/prompts.js';
 import {
   LoadBehaviorSchema,
@@ -158,7 +158,7 @@ describe('behavior-mcp Browser Actions, Conditions, Injector & Prompts & Schemas
 
   describe('Prompts Registration', () => {
     it('should register MCP standard prompts', () => {
-      const server = new McpServer({ name: 'test', version: '1.0.0' });
+      const server = new NativeMcpServer({ name: 'test', version: '1.0.0' });
       registerAllPrompts(server);
       expect(server).toBeDefined();
     });

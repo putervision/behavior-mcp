@@ -1,15 +1,31 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
+export function registerAllPrompts(server: any): void {
+  const registerPrompt = (
+    name: string,
+    metadata: { title: string; description: string; argsSchema?: Record<string, any> },
+    handler: (args: any, extra?: { signal?: AbortSignal }) => Promise<any> | any
+  ) => {
+    if (typeof server.registerPrompt === 'function') {
+      server.registerPrompt(name, metadata, handler);
+    } else if (typeof server.prompt === 'function') {
+      server.prompt(name, metadata.description, metadata.argsSchema || {}, handler);
+    }
+  };
 
-export function registerAllPrompts(server: McpServer): void {
-  server.prompt(
+  registerPrompt(
     'behavior-design',
-    'Design a robust, composable behavior tree with sequences, selectors, guards, and decorators',
     {
-      goal: z.string().describe('Target goal or behavior objective'),
-      environment: z.string().optional().describe('Operating environment constraints'),
+      title: 'Behavior Design',
+      description:
+        'Design a robust, composable behavior tree with sequences, selectors, guards, and decorators',
+      argsSchema: {
+        properties: {
+          goal: { type: 'string', description: 'Target goal or behavior objective' },
+          environment: { type: 'string', description: 'Operating environment constraints' },
+        },
+        required: ['goal'],
+      },
     },
-    async (args) => {
+    async (args: any) => {
       return {
         messages: [
           {
@@ -24,13 +40,20 @@ export function registerAllPrompts(server: McpServer): void {
     }
   );
 
-  server.prompt(
+  registerPrompt(
     'debug-stuck',
-    'Investigate and resolve stuck behavior execution instances and infinite node loops',
     {
-      execution_id: z.string().describe('Stuck execution instance ID'),
+      title: 'Debug Stuck',
+      description:
+        'Investigate and resolve stuck behavior execution instances and infinite node loops',
+      argsSchema: {
+        properties: {
+          execution_id: { type: 'string', description: 'Stuck execution instance ID' },
+        },
+        required: ['execution_id'],
+      },
     },
-    async (args) => {
+    async (args: any) => {
       return {
         messages: [
           {
@@ -45,13 +68,19 @@ export function registerAllPrompts(server: McpServer): void {
     }
   );
 
-  server.prompt(
+  registerPrompt(
     'optimize-behavior',
-    'Optimize behavior tree node ordering and conditions for 60Hz tick efficiency',
     {
-      behavior_name: z.string().describe('Behavior tree name to optimize'),
+      title: 'Optimize Behavior',
+      description: 'Optimize behavior tree node ordering and conditions for 60Hz tick efficiency',
+      argsSchema: {
+        properties: {
+          behavior_name: { type: 'string', description: 'Behavior tree name to optimize' },
+        },
+        required: ['behavior_name'],
+      },
     },
-    async (args) => {
+    async (args: any) => {
       return {
         messages: [
           {
@@ -66,14 +95,21 @@ export function registerAllPrompts(server: McpServer): void {
     }
   );
 
-  server.prompt(
+  registerPrompt(
     'trigger-design',
-    'Create reactive interrupt triggers with priority preemption and cooldown guards',
     {
-      behavior_name: z.string().describe('Emergency behavior to trigger'),
-      emergency_condition: z.string().describe('Trigger condition description'),
+      title: 'Trigger Design',
+      description:
+        'Create reactive interrupt triggers with priority preemption and cooldown guards',
+      argsSchema: {
+        properties: {
+          behavior_name: { type: 'string', description: 'Emergency behavior to trigger' },
+          emergency_condition: { type: 'string', description: 'Trigger condition description' },
+        },
+        required: ['behavior_name', 'emergency_condition'],
+      },
     },
-    async (args) => {
+    async (args: any) => {
       return {
         messages: [
           {

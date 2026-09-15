@@ -1,5 +1,4 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
+import { McpError, ErrorCode } from '../transport/native-mcp.js';
 import { toolDefinitions, READ_ONLY_TOOLS } from './definitions.js';
 import { getDb, getReadOnlyDb, getProjectSlug } from '../engine/db.js';
 import { BehaviorRegistry } from '../engine/behaviors.js';
@@ -17,6 +16,7 @@ import { ActionRateLimiter } from '../engine/rate-limiter.js';
 import { PolicyGate } from '../engine/policy-gate.js';
 import { EmergencySafety } from '../engine/safety.js';
 import { StuckDetector } from '../engine/stuck-detector.js';
+import { z, Schema, ObjectSchema } from '../schema/schemas.js';
 
 const rateLimiter = new ActionRateLimiter(60);
 const policyGate = new PolicyGate();
@@ -33,7 +33,7 @@ interface JsonSchemaProperty {
   [key: string]: unknown;
 }
 
-export function jsonSchemaToZod(schema: JsonSchemaProperty | unknown): z.ZodTypeAny {
+export function jsonSchemaToZod(schema: JsonSchemaProperty | unknown): Schema<any> {
   if (!schema || typeof schema !== 'object') return z.unknown();
   const s = schema as JsonSchemaProperty;
 
@@ -50,7 +50,7 @@ export function jsonSchemaToZod(schema: JsonSchemaProperty | unknown): z.ZodType
     return z.array(itemSchema);
   }
   if (s.type === 'object' || s.properties) {
-    const shape: Record<string, z.ZodTypeAny> = {};
+    const shape: Record<string, Schema<any>> = {};
     const requiredKeys = new Set(s.required || []);
     if (s.properties) {
       for (const [key, prop] of Object.entries(s.properties)) {
@@ -66,25 +66,45 @@ export function jsonSchemaToZod(schema: JsonSchemaProperty | unknown): z.ZodType
   return z.unknown();
 }
 
-export function registerAllTools(server: McpServer): void {
+export function jsonSchemaToZodObject(schema: any): any {
+  const zod = jsonSchemaToZod(schema);
+  if (zod instanceof ObjectSchema) {
+    return zod;
+  }
+  return z.object({}).passthrough();
+}
+
+export function registerAllTools(server: any): void {
   const toolNames = toolDefinitions.map((t) => t.name);
 
   for (const def of toolDefinitions) {
-    const zodShape: Record<string, z.ZodTypeAny> = {};
-    const schemaProps = (def.inputSchema.properties || {}) as Record<string, JsonSchemaProperty>;
-    const requiredList = new Set((def.inputSchema.required as string[]) || []);
+    const name = def.name;
+    const title = name
+      .split('_')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+    const isReadOnlyTool = READ_ONLY_TOOLS.has(name);
 
-    for (const [key, prop] of Object.entries(schemaProps)) {
-      let fieldSchema = jsonSchemaToZod(prop);
-      if (!requiredList.has(key)) {
-        fieldSchema = fieldSchema.optional();
-      }
-      zodShape[key] = fieldSchema;
+    const effectiveSchema = JSON.parse(JSON.stringify(def.inputSchema));
+    if (effectiveSchema.properties?.action) {
+      delete effectiveSchema.properties.action.enum;
     }
 
-    server.tool(def.name, def.description, zodShape, async (args: any) => {
+    const handler = async (args: any) => {
       try {
-        const project = getProjectSlug(args.project);
+        const projectSlug =
+          args?.project ||
+          process.env.BEHAVIOR_MCP_PROJECT ||
+          process.env.BEHAVIOR_PROJECT ||
+          process.env.PV_PROJECT;
+        if (!projectSlug || String(projectSlug).trim() === '') {
+          throw new McpError(
+            ErrorCode.InvalidParams,
+            `Parameter "project" is required for tool "${def.name}". Provide the "project" parameter or set the BEHAVIOR_MCP_PROJECT environment variable.`
+          );
+        }
+        const project = getProjectSlug(String(projectSlug).trim());
+        if (args) args.project = project;
         const isReadOnly = READ_ONLY_TOOLS.has(def.name);
         const db = isReadOnly ? getReadOnlyDb(project) : getDb(project);
 
@@ -184,12 +204,28 @@ export function registerAllTools(server: McpServer): void {
             });
             const execId = args.execution_id || execs[0]?.id;
             if (!execId) throw new ValidationError('No active running execution to abort.');
-            result = ExecutionEngine.stopExecution(db, {
-              project,
-              execution_id: execId,
-              status: args.action === 'pause' ? 'paused' : 'aborted',
-              error_message: args.reason,
-            });
+            if (args.action === 'unstick') {
+              db.prepare(
+                'UPDATE execution_state SET stuck_score = 0.0, updated_at = ? WHERE id = ? AND project = ?'
+              ).run(new Date().toISOString(), execId, project);
+              result = ExecutionEngine.stopExecution(db, {
+                project,
+                execution_id: execId,
+                status: 'aborted',
+                error_message:
+                  args.reason ||
+                  'Unstick recovery triggered: execution halted and inputs disengaged.',
+              });
+              result.unstick_recovered = true;
+              result.stuck_score = 0.0;
+            } else {
+              result = ExecutionEngine.stopExecution(db, {
+                project,
+                execution_id: execId,
+                status: args.action === 'pause' ? 'paused' : 'aborted',
+                error_message: args.reason,
+              });
+            }
             result._suggestions = [
               {
                 tool: 'get_metrics',
@@ -247,6 +283,39 @@ export function registerAllTools(server: McpServer): void {
                 description: args.description,
                 tree: args.tree || JSON.parse(args.tree_json || '{}'),
               });
+            } else if (action === 'synthesize') {
+              const strategy = args.strategy || 'sequence';
+              const rawSteps = args.steps || args.actions || [];
+              const children = rawSteps.map((step: any, idx: number) => {
+                if (typeof step === 'string') {
+                  return { id: `step_${idx + 1}`, type: 'action', name: step };
+                }
+                return {
+                  id: step.id || `step_${idx + 1}`,
+                  type: step.type || 'action',
+                  name: step.name || step.action || `action_${idx + 1}`,
+                  parameters: step.parameters,
+                };
+              });
+              const tree = {
+                id: args.name,
+                type: strategy,
+                children,
+              };
+              const behavior = BehaviorRegistry.registerBehavior(db, {
+                project,
+                name: args.name,
+                version: args.version,
+                description: args.description || `Synthesized ${strategy} behavior tree`,
+                tree,
+                client_request_id: args.client_request_id,
+              });
+              result = {
+                ...behavior,
+                synthesized: true,
+                strategy,
+                node_count: children.length + 1,
+              };
             } else if (action === 'get') {
               result = BehaviorRegistry.getBehavior(db, {
                 project,
@@ -257,7 +326,7 @@ export function registerAllTools(server: McpServer): void {
               result = BehaviorRegistry.listBehaviors(db, project);
             } else {
               throw new ValidationError(
-                `Unsupported manage_behaviors action: "${action}". Supported actions: register, get, list.`
+                `Unsupported manage_behaviors action: "${action}". Supported actions: register, get, list, synthesize.`
               );
             }
             break;
@@ -270,6 +339,9 @@ export function registerAllTools(server: McpServer): void {
                 project,
                 execution_id: args.execution_id,
               });
+              if (args.key) {
+                result = { key: args.key, value: (result as any)[args.key] };
+              }
             } else if (action === 'set' && args.execution_id && args.key) {
               result = BlackboardEngine.setBlackboardKey(db, {
                 project,
@@ -277,9 +349,29 @@ export function registerAllTools(server: McpServer): void {
                 key: args.key,
                 value: args.value,
               });
+            } else if (action === 'delete' && args.execution_id && args.key) {
+              result = BlackboardEngine.deleteBlackboardKey(db, {
+                project,
+                execution_id: args.execution_id,
+                key: args.key,
+              });
+            } else if (action === 'list' && args.execution_id) {
+              result = BlackboardEngine.listBlackboard(db, {
+                project,
+                execution_id: args.execution_id,
+              });
+            } else if (action === 'lease' && args.execution_id && args.key) {
+              result = BlackboardEngine.leaseBlackboard(db, {
+                project,
+                execution_id: args.execution_id,
+                key: args.key,
+                agent_id: args.agent_id || 'agent',
+                duration_seconds: args.duration_seconds,
+                mode: args.mode,
+              });
             } else {
               throw new ValidationError(
-                `Unsupported manage_blackboard action or missing execution_id: "${action}". Supported actions: get, set.`
+                `Unsupported manage_blackboard action or missing execution_id/key: "${action}". Supported actions: get, set, delete, lease, list.`
               );
             }
             break;
@@ -306,6 +398,19 @@ export function registerAllTools(server: McpServer): void {
               result = { behaviorsCount, executionsCount, triggersCount, project };
             } else if (action === 'audit') {
               result = verifyEventChain(db, project);
+            } else if (action === 'doctor') {
+              const audit = verifyEventChain(db, project);
+              const integrity = db.pragma('integrity_check');
+              const journal = db.pragma('journal_mode');
+              result = {
+                status: audit.valid ? 'healthy' : 'unhealthy',
+                valid: audit.valid,
+                database_accessibility: 'OK',
+                journal_mode: journal,
+                integrity_check: integrity,
+                event_chain: audit,
+                project,
+              };
             } else if (action === 'snapshot') {
               result = SnapshotEngine.saveSnapshot(db, {
                 project,
@@ -318,7 +423,7 @@ export function registerAllTools(server: McpServer): void {
               result = SnapshotEngine.listSnapshots(db, { project });
             } else {
               throw new ValidationError(
-                `Unsupported manage_runtime_db action: "${action}". Supported actions: stats, audit, snapshot, restore, diff.`
+                `Unsupported manage_runtime_db action: "${action}". Supported actions: stats, audit, doctor, snapshot, restore, diff.`
               );
             }
             break;
@@ -337,6 +442,12 @@ export function registerAllTools(server: McpServer): void {
           ],
         };
       } catch (error: any) {
+        if (
+          error instanceof McpError ||
+          (error && typeof error === 'object' && error.code === ErrorCode.InvalidParams)
+        ) {
+          throw error;
+        }
         const advice = SchemaAdvisor.getAdvice(def.name, error.message, toolNames);
         return {
           isError: true,
@@ -356,6 +467,26 @@ export function registerAllTools(server: McpServer): void {
           ],
         };
       }
-    });
+    };
+
+    if (typeof server.registerTool === 'function') {
+      server.registerTool(
+        name,
+        {
+          title,
+          description: def.description,
+          inputSchema: effectiveSchema,
+          rawJsonSchema: effectiveSchema,
+          annotations: {
+            readOnlyHint: isReadOnlyTool,
+            destructiveHint: false,
+            openWorldHint: false,
+          },
+        },
+        handler
+      );
+    } else if (typeof server.tool === 'function') {
+      server.tool(def.name, def.description, effectiveSchema, handler);
+    }
   }
 }

@@ -1,25 +1,32 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { z } from 'zod';
 import { logger } from '../utils/logger.js';
 
-export const ProjectConfigSchema = z
-  .object({
-    projectName: z.string().optional(),
-    defaultBranch: z.string().optional(),
-    storagePath: z.string().optional(),
-    allowedExportDirs: z.array(z.string()).optional(),
-    busyTimeoutMs: z.number().int().positive().optional(),
-    mmapSizeBytes: z.number().int().positive().optional(),
-    tickRateHz: z.number().int().positive().optional(),
-    stuckThreshold: z.number().int().positive().optional(),
-    maxActionsPerSec: z.number().int().positive().optional(),
-    allowlistOrigins: z.array(z.string()).optional(),
-    accessMode: z.enum(['normal', 'read_only']).optional(),
-  })
-  .passthrough();
+export interface ProjectConfig {
+  projectName?: string;
+  defaultBranch?: string;
+  storagePath?: string;
+  allowedExportDirs?: string[];
+  busyTimeoutMs?: number;
+  mmapSizeBytes?: number;
+  tickRateHz?: number;
+  stuckThreshold?: number;
+  maxActionsPerSec?: number;
+  allowlistOrigins?: string[];
+  accessMode?: 'normal' | 'read_only';
+  [key: string]: any;
+}
 
-export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
+export const ProjectConfigSchema = {
+  safeParse(
+    val: unknown
+  ): { success: true; data: ProjectConfig } | { success: false; error: { message: string } } {
+    if (!val || typeof val !== 'object' || Array.isArray(val)) {
+      return { success: false, error: { message: 'Expected object' } };
+    }
+    return { success: true, data: val as ProjectConfig };
+  },
+};
 
 const cachedConfigs = new Map<string, { config: ProjectConfig; timestamp: number }>();
 const CONFIG_TTL_MS = 2000;

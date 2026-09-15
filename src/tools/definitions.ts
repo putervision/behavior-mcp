@@ -83,8 +83,9 @@ export const toolDefinitions: ToolDefinition[] = [
       properties: {
         action: {
           type: 'string',
-          enum: ['abort', 'pause', 'resume'],
-          description: 'Execution control operation',
+          enum: ['abort', 'pause', 'resume', 'unstick'],
+          description:
+            'Execution control operation: abort, pause, resume, unstick (resets stuck score and disengages inputs)',
         },
         execution_id: { type: 'string', description: 'Target execution ID' },
         reason: { type: 'string', description: 'Reason for abort or pause' },
@@ -178,14 +179,24 @@ export const toolDefinitions: ToolDefinition[] = [
       properties: {
         action: {
           type: 'string',
-          enum: ['register', 'list', 'get'],
-          description: 'Behavior definition management operation',
+          enum: ['register', 'list', 'get', 'synthesize'],
+          description: 'Behavior definition management operation: register, list, get, synthesize',
         },
         name: { type: 'string', description: 'Behavior tree name' },
         version: { type: 'number', description: 'Tree version' },
         description: { type: 'string', description: 'Tree description' },
         tree: { type: 'object', description: 'Behavior tree JSON object' },
         tree_json: { type: 'string', description: 'Raw behavior tree JSON string' },
+        steps: {
+          type: 'array',
+          items: { type: 'object' },
+          description: 'Steps or actions to synthesize into a behavior tree',
+        },
+        strategy: {
+          type: 'string',
+          enum: ['sequence', 'selector', 'parallel'],
+          description: 'Root composition strategy for synthesize action (default: sequence)',
+        },
         client_request_id: { type: 'string', description: 'Idempotency key' },
         project: { type: 'string', description: 'Target project slug' },
       },
@@ -194,18 +205,26 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'manage_blackboard',
-    description: 'Read, write, or query shared behavior tree blackboard state variables.',
+    description:
+      'Read, write, delete, lease, or list shared behavior tree blackboard state variables.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
-          enum: ['get', 'set'],
-          description: 'Blackboard operation',
+          enum: ['get', 'set', 'delete', 'lease', 'list'],
+          description: 'Blackboard operation: get, set, delete, lease, list',
         },
         execution_id: { type: 'string', description: 'Target execution ID' },
         key: { type: 'string', description: 'Blackboard variable key' },
         value: { description: 'Blackboard variable value' },
+        agent_id: { type: 'string', description: 'Agent identifier for lease actions' },
+        mode: {
+          type: 'string',
+          enum: ['acquire', 'release'],
+          description: 'Lease action mode: acquire or release (default: acquire)',
+        },
+        duration_seconds: { type: 'number', description: 'Lease duration in seconds' },
         project: { type: 'string', description: 'Target project slug' },
       },
       required: ['action'],
@@ -220,8 +239,9 @@ export const toolDefinitions: ToolDefinition[] = [
       properties: {
         action: {
           type: 'string',
-          enum: ['stats', 'audit', 'snapshot', 'diff', 'restore'],
-          description: 'Database maintenance operation',
+          enum: ['stats', 'audit', 'doctor', 'snapshot', 'diff', 'restore'],
+          description:
+            'Database maintenance operation: stats, audit, doctor (health diagnostics), snapshot, diff, restore',
         },
         name: { type: 'string', description: 'Snapshot name' },
         description: { type: 'string', description: 'Snapshot description' },

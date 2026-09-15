@@ -52,7 +52,7 @@ export function getMcpConfigCursor(projectSlug: string): Record<string, unknown>
         command: 'behavior-mcp',
         args: ['run'],
         env: {
-          BEHAVIOR_PROJECT: projectSlug,
+          BEHAVIOR_MCP_PROJECT: projectSlug,
         },
       },
     },
@@ -67,7 +67,7 @@ export function getMcpConfigVscode(projectSlug: string): Record<string, unknown>
         command: 'behavior-mcp',
         args: ['run'],
         env: {
-          BEHAVIOR_PROJECT: projectSlug,
+          BEHAVIOR_MCP_PROJECT: projectSlug,
         },
       },
     },
