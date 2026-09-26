@@ -41,4 +41,17 @@ export const ActionRegistry: Record<
     ctx.blackboard.patrolling = true;
     return { status: 'SUCCESS', output: { patrol: true } };
   },
+  request_semantic_evaluation: (params, ctx) => {
+    const key = (params.key as string) || (params.statement as string) || (params.query as string) || 'default';
+    const query = params.query || params.statement || params.question || key;
+    const reqKey = `semantic_request_${key}`;
+    ctx.blackboard[reqKey] = {
+      key,
+      query,
+      target: params.target,
+      context_data: params.context_data,
+      timestamp: Date.now(),
+    };
+    return { status: 'RUNNING', output: { requested: true, key, query } };
+  },
 };

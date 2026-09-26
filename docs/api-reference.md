@@ -1,4 +1,4 @@
-# API Reference: `@putervision/behavior-mcp`
+# API Reference: `@putervision/behavior-mcp` (v0.3.0 — 10 Tools)
 
 Comprehensive documentation for all 10 MCP tools provided by `@putervision/behavior-mcp`.
 

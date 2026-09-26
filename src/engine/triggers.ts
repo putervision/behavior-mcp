@@ -6,6 +6,28 @@ import { safeJsonParse, safeJsonStringify } from '../utils/json-validator.js';
 import { ValidationError, NotFoundError } from '../utils/errors.js';
 import { logRuntimeEvent } from './events.js';
 
+export const TriggerConditionRegistry: Record<
+  string,
+  (params: Record<string, unknown>, telemetry: Record<string, any>) => boolean
+> = {
+  hp_threshold: (conditionParams, telemetry) => {
+    const hp = telemetry.hp ?? 100;
+    const threshold = (conditionParams.threshold as number) ?? 30;
+    return hp <= threshold;
+  },
+  enemy_proximity: (conditionParams, telemetry) => {
+    const enemyDist = telemetry.enemy_distance ?? 999;
+    const radius = (conditionParams.radius as number) ?? 10;
+    return enemyDist <= radius;
+  },
+  semantic: (conditionParams, telemetry) => {
+    const key = (conditionParams.key as string) || 'default';
+    const expected = conditionParams.expected ?? true;
+    const val = telemetry[key] ?? telemetry[`semantic_decision_${key}`];
+    return val === expected;
+  },
+};
+
 export class TriggerRegistry {
   static registerTrigger(
     db: Database.Database,
@@ -97,16 +119,8 @@ export class TriggerRegistry {
         continue; // In cooldown
       }
 
-      let matches = false;
-      if (trig.condition_type === 'hp_threshold') {
-        const hp = params.telemetry.hp ?? 100;
-        const threshold = (trig.condition_params.threshold as number) ?? 30;
-        matches = hp <= threshold;
-      } else if (trig.condition_type === 'enemy_proximity') {
-        const enemyDist = params.telemetry.enemy_distance ?? 999;
-        const radius = (trig.condition_params.radius as number) ?? 10;
-        matches = enemyDist <= radius;
-      }
+      const evaluator = TriggerConditionRegistry[trig.condition_type];
+      const matches = evaluator ? evaluator(trig.condition_params || {}, params.telemetry) : false;
 
       if (matches) {
         db.prepare('UPDATE triggers SET last_fired_at = ?, updated_at = ? WHERE id = ?').run(
