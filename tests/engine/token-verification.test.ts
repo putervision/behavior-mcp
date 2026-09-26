@@ -1,6 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import crypto from 'crypto';
-import { verifyIntentionDispatch, DispatchToken, Intention } from '../../src/engine/browser/executor-bundle.js';
+import { verifyIntentionDispatch } from '../../src/engine/browser/executor-bundle.js';
+import { DispatchToken } from '../../src/schema/types.js';
+
+interface Intention {
+  id: string;
+  project?: string;
+  behavior_name: string;
+  parameters?: Record<string, unknown>;
+  priority?: number;
+  status?: string;
+}
 
 describe('Behavior-MCP DispatchToken HMAC Verification', () => {
   const secret = 'pentad_hmac_secret_key_for_testing_0123456789!';
@@ -18,7 +28,10 @@ describe('Behavior-MCP DispatchToken HMAC Verification', () => {
     const now = Date.now();
     const issuedAt = new Date(now).toISOString();
     const expiresAt = new Date(now + 30000).toISOString();
-    const paramsHash = crypto.createHash('sha256').update(JSON.stringify({ speed: 1.0 })).digest('hex');
+    const paramsHash = crypto
+      .createHash('sha256')
+      .update(JSON.stringify({ speed: 1.0 }))
+      .digest('hex');
 
     const tokenId = 'tok_001';
     const intentionId = overrides.intention_id || sampleIntention.id;
@@ -64,7 +77,10 @@ describe('Behavior-MCP DispatchToken HMAC Verification', () => {
     // Issued 1500ms in the future (within 2000ms clock skew tolerance)
     const futureIssued = new Date(now + 1500).toISOString();
     const expiresAt = new Date(now + 30000).toISOString();
-    const paramsHash = crypto.createHash('sha256').update(JSON.stringify({ speed: 1.0 })).digest('hex');
+    const paramsHash = crypto
+      .createHash('sha256')
+      .update(JSON.stringify({ speed: 1.0 }))
+      .digest('hex');
 
     const preimage = `tok_skew:${sampleIntention.id}:${sampleIntention.behavior_name}:${paramsHash}:behavior-mcp:${futureIssued}:${expiresAt}`;
     const hmacSignature = crypto.createHmac('sha256', secret).update(preimage).digest('hex');
@@ -87,7 +103,10 @@ describe('Behavior-MCP DispatchToken HMAC Verification', () => {
     const now = Date.now();
     const issuedAt = new Date(now - 60000).toISOString();
     const expiresAt = new Date(now - 5000).toISOString(); // Expired 5s ago
-    const paramsHash = crypto.createHash('sha256').update(JSON.stringify({ speed: 1.0 })).digest('hex');
+    const paramsHash = crypto
+      .createHash('sha256')
+      .update(JSON.stringify({ speed: 1.0 }))
+      .digest('hex');
 
     const preimage = `tok_exp:${sampleIntention.id}:${sampleIntention.behavior_name}:${paramsHash}:behavior-mcp:${issuedAt}:${expiresAt}`;
     const hmacSignature = crypto.createHmac('sha256', secret).update(preimage).digest('hex');

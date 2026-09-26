@@ -48,7 +48,10 @@ describe('Behavior-MCP Native Transport & Client Exhaustive Coverage', () => {
     const prompts = await client.listPrompts();
     expect(prompts.prompts.some((p: any) => p.name === 'system_prompt')).toBe(true);
 
-    const promptRes = await client.getPrompt({ name: 'system_prompt', arguments: { role: 'tester' } });
+    const promptRes = await client.getPrompt({
+      name: 'system_prompt',
+      arguments: { role: 'tester' },
+    });
     expect(promptRes.messages[0].content.text).toBe('Role: tester');
     expect(server._registeredPrompts['system_prompt']).toBeDefined();
 

@@ -50,12 +50,20 @@ describe('Behavior-MCP Engine & Handlers Coverage Boost', () => {
     expect(TriggerConditionRegistry.hp_threshold({ threshold: 20 }, { hp: 50 })).toBe(false);
 
     // enemy_proximity
-    expect(TriggerConditionRegistry.enemy_proximity({ radius: 5 }, { enemy_distance: 3 })).toBe(true);
-    expect(TriggerConditionRegistry.enemy_proximity({ radius: 5 }, { enemy_distance: 10 })).toBe(false);
+    expect(TriggerConditionRegistry.enemy_proximity({ radius: 5 }, { enemy_distance: 3 })).toBe(
+      true
+    );
+    expect(TriggerConditionRegistry.enemy_proximity({ radius: 5 }, { enemy_distance: 10 })).toBe(
+      false
+    );
 
     // semantic
-    expect(TriggerConditionRegistry.semantic({ key: 'see_gold', expected: true }, { see_gold: true })).toBe(true);
-    expect(TriggerConditionRegistry.semantic({ key: 'see_gold', expected: false }, { see_gold: true })).toBe(false);
+    expect(
+      TriggerConditionRegistry.semantic({ key: 'see_gold', expected: true }, { see_gold: true })
+    ).toBe(true);
+    expect(
+      TriggerConditionRegistry.semantic({ key: 'see_gold', expected: false }, { see_gold: true })
+    ).toBe(false);
 
     const testDb = new Database(':memory:');
     runMigrations(testDb);
@@ -121,7 +129,9 @@ describe('Behavior-MCP Engine & Handlers Coverage Boost', () => {
     const redactedArr = redactData(['Bearer secrettoken', { myApiKey: 'sk-12345678901234567890' }]);
     expect(redactedArr[0]).toContain('[REDACTED]');
 
-    expect(() => validatePath('', { projectRoot: '/tmp' })).toThrow('File path must be a non-empty string');
+    expect(() => validatePath('', { projectRoot: '/tmp' })).toThrow(
+      'File path must be a non-empty string'
+    );
     expect(() => validatePath('/etc/shadow', { projectRoot: '/tmp' })).toThrow('Access denied');
     expect(validatePath('state.json', { projectRoot: '/tmp' })).toBe('/tmp/state.json');
   });
@@ -144,13 +154,21 @@ describe('Behavior-MCP Engine & Handlers Coverage Boost', () => {
     expect(docData.status).toBe('healthy');
 
     // Test manage_runtime_db snapshot & diff & restore
-    const snapRes = await dbHandler({ project: 'test_behav_p', action: 'snapshot', name: 'snap_1' });
+    const snapRes = await dbHandler({
+      project: 'test_behav_p',
+      action: 'snapshot',
+      name: 'snap_1',
+    });
     expect(snapRes.isError).toBeUndefined();
 
     const diffRes = await dbHandler({ project: 'test_behav_p', action: 'diff' });
     expect(diffRes.isError).toBeUndefined();
 
-    const restoreRes = await dbHandler({ project: 'test_behav_p', action: 'restore', name: 'snap_1' });
+    const restoreRes = await dbHandler({
+      project: 'test_behav_p',
+      action: 'restore',
+      name: 'snap_1',
+    });
     expect(restoreRes.isError).toBeUndefined();
 
     // Test invalid actions triggering error advice

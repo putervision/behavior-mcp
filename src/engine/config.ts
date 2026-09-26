@@ -80,4 +80,3 @@ export function getPentadHmacSecret(projectRoot = process.cwd()): string | undef
   const config = loadProjectConfig(projectRoot);
   return config.pentadHmacSecret || config.hmacSecret;
 }
-
