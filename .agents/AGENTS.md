@@ -182,18 +182,3 @@ This project provides native `webcrypt-mcp` tooling for zero-dependency AES-256-
    - `vision-memory-mcp`: Visual state caching.
    - `webcrypt-mcp`: Local database vault encryption and evidence pack cryptographic signing.
 <!-- webcrypt-mcp:end -->
-
-<!-- putervision-harness:start -->
-# PuterVision MCP Cluster & Harness Rules
-
-Active Supervised MCP Servers:
-* `putervision-harness`: pv-harness start --project test_slug
-* `state-memory-mcp`: state-memory-mcp 
-* `vision-memory-mcp`: vision-memory-mcp 
-* `world-model-mcp`: world-model-mcp 
-* `agent-reasoning-mcp`: agent-reasoning-mcp 
-* `behavior-mcp`: behavior-mcp 
-* `test-custom`: npx -y @org/test-custom
-
-Always use `harness_start_loop` and supervise tasks via the PuterVision Harness.
-<!-- putervision-harness:end -->
