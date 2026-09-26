@@ -72,3 +72,12 @@ export function loadProjectConfig(projectRoot: string): ProjectConfig {
   cachedConfigs.set(projectRoot, { config, timestamp: now });
   return config;
 }
+
+export function getPentadHmacSecret(projectRoot = process.cwd()): string | undefined {
+  if (process.env.PENTAD_HMAC_SECRET) {
+    return process.env.PENTAD_HMAC_SECRET;
+  }
+  const config = loadProjectConfig(projectRoot);
+  return config.pentadHmacSecret || config.hmacSecret;
+}
+

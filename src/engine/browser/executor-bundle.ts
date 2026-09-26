@@ -1,10 +1,46 @@
-import { BehaviorTreeNode, NodeStatus } from '../../schema/types.js';
+import crypto from 'crypto';
+import { BehaviorTreeNode, NodeStatus, DispatchToken } from '../../schema/types.js';
 import { ConditionRegistry } from './conditions.js';
 import { GameConditionRegistry } from './conditions-game.js';
 import { ActionRegistry } from './actions.js';
 import { GameActionRegistry } from './actions-game.js';
 
 const MAX_TREE_DEPTH = 64;
+const CLOCK_SKEW_MS = 2000;
+
+export function verifyIntentionDispatch(
+  intention: { id: string; behavior_name?: string; parameters?: Record<string, unknown> },
+  token: DispatchToken,
+  secret?: string
+): boolean {
+  const effectiveSecret = secret || process.env.PENTAD_HMAC_SECRET;
+  if (!effectiveSecret || effectiveSecret.trim() === '') return false;
+  if (!token || typeof token !== 'object') return false;
+  if (token.aud !== 'behavior-mcp') return false;
+
+  const now = Date.now();
+  const expiresAt = Date.parse(token.expires_at);
+  const issuedAt = Date.parse(token.issued_at);
+  if (Number.isNaN(expiresAt) || Number.isNaN(issuedAt)) return false;
+
+  if (now > expiresAt + CLOCK_SKEW_MS) return false;
+  if (now < issuedAt - CLOCK_SKEW_MS) return false;
+  if (token.intention_id !== intention.id) return false;
+
+  const expectedSig = crypto
+    .createHmac('sha256', effectiveSecret)
+    .update(
+      `${token.token_id}:${token.intention_id}:${token.behavior_name}:${token.params_hash}:${token.aud}:${token.issued_at}:${token.expires_at}`
+    )
+    .digest('hex');
+
+  const sigBuf = Buffer.from(token.hmac_signature || '', 'hex');
+  const expectedBuf = Buffer.from(expectedSig, 'hex');
+
+  // Verify buffer lengths before calling crypto.timingSafeEqual() to avoid RangeError on tampered tokens
+  if (sigBuf.length !== expectedBuf.length || sigBuf.length === 0) return false;
+  return crypto.timingSafeEqual(sigBuf, expectedBuf);
+}
 
 export class BehaviorTreeEvaluator {
   private tree: BehaviorTreeNode;

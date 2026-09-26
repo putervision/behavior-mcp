@@ -1,7 +1,7 @@
 # @putervision/behavior-mcp
 
 [![npm version](https://img.shields.io/npm/v/@putervision/behavior-mcp.svg)](https://www.npmjs.com/package/@putervision/behavior-mcp)
-[![version](https://img.shields.io/badge/version-0.2.1-blue.svg)](./CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-0.3.0-blue.svg)](./CHANGELOG.md)
 [![CI](https://github.com/putervision/behavior-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/putervision/behavior-mcp/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -46,13 +46,13 @@ npx @putervision/behavior-mcp inspect
 
 ---
 
-## 🛡️ 5-Layer Safety Guardrail Stack
+## 🛡️ 5-Layer Safety Guardrail Stack & System 1 Invariants
 
 1. **Fail-Closed Evaluator**: Unrecognized node definitions throw fatal exceptions immediately.
-2. **Watchdog Heartbeat Timer**: Halts execution if tick evaluation stalls beyond 5,000ms.
-3. **Action Rate Limiter**: Strict 60 actions/sec maximum throughput ceiling.
-4. **Leaf Policy Gate**: Blocks irreversible, high-risk mutations (`delete_item`, `spend_currency`).
-5. **Emergency Kill Switch**: Atomic safety latch (`EmergencySafety.engageKillSwitch()`) halts all runtimes.
+2. **60Hz Tick Invariant & Synchronous `semantic_check`**: The loop never blocks on external network calls; semantic condition checks resolve synchronously against blackboard caches.
+3. **HMAC Intention Gate Verification**: Intentions dispatched to execution nodes require unexpired, cryptographically signed dispatch tokens (`PENTAD_HMAC_SECRET`).
+4. **Action Rate Limiter & Leaf Policy Gate**: Strict 60 actions/sec maximum throughput ceiling and policy guardrails blocking irreversible mutations.
+5. **Emergency Kill Switch & Watchdog Heartbeat**: Atomic safety latch and watchdog timers halting execution if tick stalls beyond 5,000ms.
 
 ---
 
@@ -66,7 +66,7 @@ npx @putervision/behavior-mcp inspect
 
 ---
 
-## 🔗 Client Configuration
+## 🔗 Client Configuration & Environment
 
 Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 ```json
@@ -74,7 +74,10 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
   "mcpServers": {
     "behavior-mcp": {
       "command": "behavior-mcp",
-      "args": ["run"]
+      "args": ["run"],
+      "env": {
+        "PENTAD_HMAC_SECRET": "your-secure-shared-secret-here"
+      }
     }
   }
 }
@@ -85,7 +88,7 @@ Add to `.cursor/mcp.json` or `.vscode/mcp.json`:
 ## 🧪 Testing
 
 ```bash
-# Run full unit and integration test suite across 15 test files (87 tests)
+# Run full unit and integration test suite across 38 test files (266 tests)
 npm test
 ```
 

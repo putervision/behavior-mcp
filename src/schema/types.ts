@@ -131,3 +131,15 @@ export interface Outcome {
   stuck_reason?: string;
   completed_at: string;
 }
+
+export interface DispatchToken {
+  token_id: string;                    // Unique token UUID
+  intention_id: string;                // Bound intention ID
+  behavior_name: string;               // Bound behavior tree name
+  params_hash: string;                 // SHA-256 of canonical intention parameters
+  aud: 'behavior-mcp';                 // Audience — only behavior-mcp may consume this token
+  issued_at: string;                   // ISO-8601
+  expires_at: string;                  // ISO-8601
+  hmac_signature: string;              // HMAC-SHA256 signature
+}
+
