@@ -5,18 +5,24 @@ export interface ToolDefinition {
 }
 
 export const READ_ONLY_TOOLS = new Set(['get_status', 'get_metrics']);
+export const DESTRUCTIVE_TOOLS = new Set([
+  'manage_blackboard',
+  'manage_runtime_db',
+  'load_behavior',
+]);
 
 export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'load_behavior',
-    description: 'Inject, initialize, or hot-swap a behavior tree instance in the browser runtime.',
+    description:
+      'Load, unload, or hot-swap a behavior tree instance in the browser runtime (actions: load, unload, swap). Use load_behavior instead of manage_behaviors when executing an active behavior tree instance at runtime rather than registering or inspecting definitions.\n\nReturns execution handle, runtime state, active node, and session/intention bindings.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
           enum: ['load', 'unload', 'swap'],
-          description: 'Behavior loading operation',
+          description: 'Behavior loading operation: load, unload, swap',
         },
         behavior_name: { type: 'string', description: 'Name of the behavior tree to load' },
         behavior_version: {
@@ -39,14 +45,14 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'set_parameters',
     description:
-      'Dynamically update or query execution parameters for the active behavior runtime.',
+      'Dynamically set, inspect, or reset execution parameters for the active behavior runtime (actions: set, get, reset). Use set_parameters instead of manage_blackboard for tuning tree-level execution variables and thresholds rather than sharing cross-node data keys.\n\nReturns updated parameter map and execution ID.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
           enum: ['set', 'get', 'reset'],
-          description: 'Parameter operation',
+          description: 'Parameter operation: set, get, reset',
         },
         execution_id: { type: 'string', description: 'Target execution instance ID' },
         parameters: { type: 'object', description: 'Key-value parameters map to apply' },
@@ -58,14 +64,14 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'get_status',
     description:
-      'Query active behavior execution status, current node path, tick count, duration, and error state.',
+      'Query active behavior execution status, history, or full tree node traversal state (actions: current, history, tree_state). Use get_status instead of get_metrics when inspecting active execution state and node traversal paths rather than aggregated runtime performance telemetry.\n\nReturns execution status, current node path, tick counters, duration, and error states.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
           enum: ['current', 'history', 'tree_state'],
-          description: 'Status query mode',
+          description: 'Status query mode: current, history, tree_state',
         },
         execution_id: { type: 'string', description: 'Target execution ID (or latest if omitted)' },
         limit: { type: 'number', description: 'Max history entries' },
@@ -77,7 +83,7 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'abort_behavior',
     description:
-      'Immediately halt, pause, or resume behavior execution and disengage active inputs.',
+      'Immediately halt, pause, resume, or unstick behavior execution and disengage active inputs (actions: abort, pause, resume, unstick). Use abort_behavior instead of register_trigger when manually halting or recovering execution rather than configuring automatic condition interrupts.\n\nReturns transition status, disengaged inputs, and unstick diagnostics.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -98,14 +104,14 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'register_trigger',
     description:
-      'Configure and manage reactive interrupt triggers with priority preemption and cooldown guards.',
+      'Configure or list reactive interrupt triggers with priority preemption and cooldown guards (actions: register, list). Use register_trigger instead of abort_behavior when defining automatic condition-based interrupts rather than manually pausing or stopping a tree.\n\nReturns registered trigger configuration, ID, or trigger list.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
           enum: ['register', 'list'],
-          description: 'Trigger operation',
+          description: 'Trigger operation: register, list',
         },
         name: { type: 'string', description: 'Trigger name' },
         behavior_name: {
@@ -127,14 +133,15 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: 'replay_recording',
-    description: 'Capture or replay deterministic browser action sequences with adaptive timing.',
+    description:
+      'Capture or list deterministic browser action sequences with adaptive timing (actions: capture, list). Use replay_recording instead of load_behavior when recording or inspecting fixed action sequences rather than running a dynamic behavior tree.\n\nReturns recording metadata, frame sequences, or list of stored recordings.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
           enum: ['capture', 'list'],
-          description: 'Recording operation',
+          description: 'Recording operation: capture, list',
         },
         name: { type: 'string', description: 'Recording name' },
         recording_id: { type: 'string', description: 'Recording ID' },
@@ -152,14 +159,14 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'get_metrics',
     description:
-      'Retrieve runtime execution telemetry, tick durations, stuck events, and category statistics.',
+      'Retrieve runtime execution telemetry, tick durations, stuck events, and category statistics (actions: current, history, aggregate, compare). Use get_metrics instead of get_status when evaluating tick performance and aggregated statistics rather than inspecting active node traversal.\n\nReturns telemetry metrics, duration percentiles, stuck event counts, and comparative statistics.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
           enum: ['current', 'history', 'aggregate', 'compare'],
-          description: 'Metrics query mode',
+          description: 'Metrics query mode: current, history, aggregate, compare',
         },
         execution_id: { type: 'string', description: 'Filter metrics by execution ID' },
         behavior_name: { type: 'string', description: 'Filter metrics by behavior tree name' },
@@ -173,7 +180,7 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'manage_behaviors',
     description:
-      'CRUD operations for immutable JSON behavior tree definitions with SHA-256 tree hash verification.',
+      'Manage immutable JSON behavior tree definitions with SHA-256 hash verification (actions: register, list, get, synthesize). Use manage_behaviors instead of load_behavior when defining, versioning, or synthesizing behavior tree structures rather than executing them.\n\nReturns tree definition, version metadata, SHA-256 content hash, or synthesis DAG.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -206,7 +213,7 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'manage_blackboard',
     description:
-      'Read, write, delete, lease, or list shared behavior tree blackboard state variables.',
+      'Read, write, delete, lease, or list shared behavior tree blackboard state variables (actions: get, set, delete, lease, list). Use manage_blackboard instead of set_parameters when coordinating state across behavior nodes or acquiring agent mutex leases.\n\nReturns blackboard value, lease acquisition status, or key listings.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -233,7 +240,7 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'manage_runtime_db',
     description:
-      'Database maintenance, diagnostics, SHA-256 Merkle audit verification, checkpoints save/restore, and diffs.',
+      'Database maintenance, diagnostics, SHA-256 Merkle audit verification, and snapshot management (actions: stats, audit, doctor, snapshot, diff, restore). Use manage_runtime_db instead of get_metrics when auditing SQLite integrity and Merkle proofs or restoring database snapshots.\n\nReturns maintenance diagnostics, Merkle audit trees, snapshot metadata, or diff reports.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -241,7 +248,7 @@ export const toolDefinitions: ToolDefinition[] = [
           type: 'string',
           enum: ['stats', 'audit', 'doctor', 'snapshot', 'diff', 'restore'],
           description:
-            'Database maintenance operation: stats, audit, doctor (health diagnostics), snapshot, diff, restore',
+            'Database maintenance operation: stats, audit, doctor, snapshot, diff, restore',
         },
         name: { type: 'string', description: 'Snapshot name' },
         description: { type: 'string', description: 'Snapshot description' },

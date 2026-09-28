@@ -50,6 +50,7 @@ export interface ToolDefinitionMetadata {
   annotations?: {
     readOnlyHint?: boolean;
     destructiveHint?: boolean;
+    idempotentHint?: boolean;
     openWorldHint?: boolean;
   };
 }

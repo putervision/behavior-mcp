@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-09-28
+
+### 🛠️ Glama TDQS Optimizations & MCP Annotations
+- Added `idempotentHint` and explicit `destructiveHint` annotations across tool definitions.
+- Enhanced tool descriptions with action enum definitions in the opening summary, routing guidance sentences ('Use X instead of Y when Z'), and standardized Returns blocks.
+- Preserved JSON schema action enums and synchronized package manifests and documentation.
+
 ## [0.2.0] - 2026-09-15
 
 ### 🚀 Zero-Dependency Native MCP Transport & Cross-Pentad Synchronization

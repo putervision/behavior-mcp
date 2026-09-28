@@ -1,6 +1,6 @@
 {
   "name": "@putervision/behavior-mcp",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "High-frequency in-browser behavior tree execution engine for autonomous AI agents — 60Hz tick loops, reactive triggers, telemetry recordings, and safety guardrails.",
   "keywords": [
     "mcp",
