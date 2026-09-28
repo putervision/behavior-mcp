@@ -1,5 +1,5 @@
 import { McpError, ErrorCode } from '../transport/native-mcp.js';
-import { toolDefinitions, READ_ONLY_TOOLS } from './definitions.js';
+import { toolDefinitions, READ_ONLY_TOOLS, DESTRUCTIVE_TOOLS } from './definitions.js';
 import { getDb, getReadOnlyDb, getProjectSlug } from '../engine/db.js';
 import { BehaviorRegistry } from '../engine/behaviors.js';
 import { ExecutionEngine } from '../engine/executor.js';
@@ -86,9 +86,6 @@ export function registerAllTools(server: any): void {
     const isReadOnlyTool = READ_ONLY_TOOLS.has(name);
 
     const effectiveSchema = JSON.parse(JSON.stringify(def.inputSchema));
-    if (effectiveSchema.properties?.action) {
-      delete effectiveSchema.properties.action.enum;
-    }
 
     const handler = async (args: any) => {
       try {
@@ -479,7 +476,8 @@ export function registerAllTools(server: any): void {
           rawJsonSchema: effectiveSchema,
           annotations: {
             readOnlyHint: isReadOnlyTool,
-            destructiveHint: false,
+            destructiveHint: DESTRUCTIVE_TOOLS.has(name),
+            idempotentHint: isReadOnlyTool,
             openWorldHint: false,
           },
         },
