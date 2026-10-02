@@ -151,5 +151,23 @@ export function runMigrations(db: Database.Database): void {
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_execution_proj_status_time ON execution_state(project, status, updated_at);
     CREATE INDEX IF NOT EXISTS idx_metrics_proj_exec_time ON execution_metrics(project, execution_id, created_at);
+
+    CREATE TABLE IF NOT EXISTS outcome_spool (
+      id TEXT PRIMARY KEY,
+      project TEXT NOT NULL,
+      behavior_name TEXT NOT NULL,
+      execution_id TEXT,
+      session_id TEXT,
+      node_id TEXT NOT NULL,
+      action_type TEXT NOT NULL,
+      parameters_json TEXT NOT NULL DEFAULT '{}',
+      status TEXT NOT NULL,
+      duration_ms REAL NOT NULL DEFAULT 0.0,
+      tick INTEGER NOT NULL DEFAULT 0,
+      synced INTEGER NOT NULL DEFAULT 0,
+      timestamp TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_spool_project_synced ON outcome_spool(project, synced);
+    CREATE INDEX IF NOT EXISTS idx_spool_timestamp ON outcome_spool(timestamp);
   `);
 }

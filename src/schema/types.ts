@@ -142,3 +142,34 @@ export interface DispatchToken {
   expires_at: string; // ISO-8601
   hmac_signature: string; // HMAC-SHA256 signature
 }
+
+export const AffordanceBitmask = {
+  TRAVERSABLE: 1,
+  OCCLUDER: 2,
+  CONTAINER: 4,
+  INTERACTABLE: 8,
+  THREAT: 16,
+} as const;
+
+export interface OutcomeSpoolEntry {
+  id: string;
+  project: string;
+  behavior_name: string;
+  node_id: string;
+  action_type: string;
+  parameters: Record<string, unknown>;
+  status: 'SUCCESS' | 'FAILURE' | 'RUNNING' | string;
+  duration_ms: number;
+  tick: number;
+  timestamp: string;
+  synced: boolean;
+}
+
+export interface IngestSliceResult {
+  success: boolean;
+  slice_type: 'spatial' | 'visual' | 'task' | 'vitals';
+  keys_updated: string[];
+  ingested_at: string;
+  ttl_ms: number;
+  expires_at: string;
+}

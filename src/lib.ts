@@ -11,6 +11,7 @@ export * from './engine/triggers.js';
 export * from './engine/metrics.js';
 export * from './engine/snapshots.js';
 export * from './engine/events.js';
+export * from './engine/spool.js';
 export * from './engine/browser/node-types.js';
 export * from './engine/browser/conditions.js';
 export * from './engine/browser/conditions-game.js';

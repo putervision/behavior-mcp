@@ -159,18 +159,23 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'get_metrics',
     description:
-      'Retrieve runtime execution telemetry, tick durations, stuck events, and category statistics (actions: current, history, aggregate, compare). Use get_metrics instead of get_status when evaluating tick performance and aggregated statistics rather than inspecting active node traversal.\n\nReturns telemetry metrics, duration percentiles, stuck event counts, and comparative statistics.',
+      'Retrieve runtime execution telemetry, tick durations, stuck events, category statistics, and 60Hz action outcome spool entries (actions: current, history, aggregate, compare, spool, drain_spool). Use get_metrics instead of get_status when evaluating tick performance, reading spooled action outcomes, or inspecting aggregated statistics rather than active node traversal.\n\nReturns telemetry metrics, duration percentiles, stuck event counts, spooled outcome records, or drained entry counts.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
-          enum: ['current', 'history', 'aggregate', 'compare'],
-          description: 'Metrics query mode: current, history, aggregate, compare',
+          enum: ['current', 'history', 'aggregate', 'compare', 'spool', 'drain_spool'],
+          description:
+            'Metrics query mode: current, history, aggregate, compare, spool, drain_spool',
         },
         execution_id: { type: 'string', description: 'Filter metrics by execution ID' },
         behavior_name: { type: 'string', description: 'Filter metrics by behavior tree name' },
         limit: { type: 'number', description: 'Max records' },
+        unsynced_only: {
+          type: 'boolean',
+          description: 'Filter only unsynced spool entries (action: spool)',
+        },
         trace_id: { type: 'string', description: 'Distributed trace ID' },
         project: { type: 'string', description: 'Target project slug' },
       },
@@ -213,14 +218,14 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'manage_blackboard',
     description:
-      'Read, write, delete, lease, or list shared behavior tree blackboard state variables (actions: get, set, delete, lease, list). Use manage_blackboard instead of set_parameters when coordinating state across behavior nodes or acquiring agent mutex leases.\n\nReturns blackboard value, lease acquisition status, or key listings.',
+      'Read, write, delete, lease, list, or ingest structured state slices into shared behavior tree blackboard state (actions: get, set, delete, lease, list, ingest_slice). Use manage_blackboard instead of set_parameters when coordinating state across behavior nodes, projecting perception/spatial slices with staleness protection, or acquiring agent mutex leases.\n\nReturns blackboard value, lease acquisition status, key listings, or slice ingestion summary with expiry metadata.',
     inputSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
-          enum: ['get', 'set', 'delete', 'lease', 'list'],
-          description: 'Blackboard operation: get, set, delete, lease, list',
+          enum: ['get', 'set', 'delete', 'lease', 'list', 'ingest_slice'],
+          description: 'Blackboard operation: get, set, delete, lease, list, ingest_slice',
         },
         execution_id: { type: 'string', description: 'Target execution ID' },
         key: { type: 'string', description: 'Blackboard variable key' },
@@ -232,6 +237,20 @@ export const toolDefinitions: ToolDefinition[] = [
           description: 'Lease action mode: acquire or release (default: acquire)',
         },
         duration_seconds: { type: 'number', description: 'Lease duration in seconds' },
+        slice_type: {
+          type: 'string',
+          enum: ['spatial', 'visual', 'task', 'vitals'],
+          description: 'Slice category for ingest_slice (default: spatial)',
+        },
+        payload: {
+          type: 'object',
+          description:
+            'Key-value dictionary of slice data to project into blackboard (action: ingest_slice)',
+        },
+        ttl_ms: {
+          type: 'number',
+          description: 'Time-to-live before slice expires and is marked stale (default: 5000ms)',
+        },
         project: { type: 'string', description: 'Target project slug' },
       },
       required: ['action'],

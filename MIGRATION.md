@@ -1,6 +1,6 @@
 # 🚀 Migration Guide: @putervision/behavior-mcp
 
-This guide explains how to migrate client integrations, custom agents, and tool callers to the unified **v0.3.1+ API** with native transport, unified blackboard dialect, dynamic behavior synthesis, and unstick recovery.
+This guide explains how to migrate client integrations, custom agents, and tool callers to the unified **v0.4.0+ API** with native transport, unified blackboard dialect, dynamic behavior synthesis, and spatial blackboard slice projection.
 
 ---
 
@@ -65,3 +65,8 @@ Tool documentation and schemas can now be inspected directly through MCP resourc
   });
   ```
 - **Unstick Recovery**: Call `abort_behavior(action: "unstick")` to reset `stuck_score`, disengage active inputs, and unblock execution when an agent becomes stuck in a loop.
+
+### 6. Blackboard Slice Projection & Spatial Conditions (v0.4.0)
+- `manage_blackboard` supports slice projection, allowing condition nodes to directly observe sub-1KB spatial and task states.
+- Typed spatial condition nodes (`distance_to_entity`, `inside_region`, `has_affordance`) execute synchronously without LLM overhead.
+- High-frequency (~60Hz) outcome spooling directly records node state transitions to local SQLite WAL for auditability.

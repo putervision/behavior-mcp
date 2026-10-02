@@ -359,10 +359,11 @@ export const ReplayRecordingSchema = z.object({
 });
 
 export const GetMetricsSchema = z.object({
-  action: z.enum(['current', 'history', 'aggregate', 'compare']),
+  action: z.enum(['current', 'history', 'aggregate', 'compare', 'spool', 'drain_spool']),
   execution_id: z.string().optional(),
   behavior_name: z.string().optional(),
   limit: z.number().optional(),
+  unsynced_only: z.boolean().optional(),
   project: z.string().optional(),
 });
 
@@ -378,11 +379,17 @@ export const ManageBehaviorsSchema = z.object({
 });
 
 export const ManageBlackboardSchema = z.object({
-  action: z.enum(['get', 'set', 'clear', 'dump']),
+  action: z.enum(['get', 'set', 'clear', 'dump', 'delete', 'list', 'lease', 'ingest_slice']),
   execution_id: z.string().optional(),
   key: z.string().optional(),
   value: z.any().optional(),
   blackboard: z.record(z.any()).optional(),
+  agent_id: z.string().optional(),
+  mode: z.enum(['acquire', 'release']).optional(),
+  duration_seconds: z.number().optional(),
+  slice_type: z.enum(['spatial', 'visual', 'task', 'vitals']).optional(),
+  payload: z.record(z.any()).optional(),
+  ttl_ms: z.number().optional(),
   project: z.string().optional(),
 });
 

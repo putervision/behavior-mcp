@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import { getCurrentIsoString } from '../utils/time.js';
 import { safeJsonParse, safeJsonStringify } from '../utils/json-validator.js';
 import { NotFoundError } from '../utils/errors.js';
+import { IngestSliceResult } from '../schema/types.js';
 
 export class BlackboardEngine {
   static getBlackboard(
@@ -120,5 +121,64 @@ export class BlackboardEngine {
       message: `Key "${params.key}" successfully leased by agent "${params.agent_id}" for ${duration}s.`,
       expires_at: expiresAt,
     };
+  }
+
+  static ingestSlice(
+    db: Database.Database,
+    params: {
+      project: string;
+      execution_id: string;
+      slice_type: 'spatial' | 'visual' | 'task' | 'vitals';
+      payload: Record<string, unknown>;
+      ttl_ms?: number;
+    }
+  ): IngestSliceResult {
+    const bb = this.getBlackboard(db, params);
+    const ttl_ms = params.ttl_ms ?? 5000;
+    const now = Date.now();
+    const ingested_at = new Date(now).toISOString();
+    const expires_at = new Date(now + ttl_ms).toISOString();
+    const prefix = params.slice_type;
+
+    const keys_updated: string[] = [];
+
+    // Prefix every field of payload under the slice category (e.g. spatial.nearby_entities)
+    for (const [k, v] of Object.entries(params.payload)) {
+      const fullKey = `${prefix}.${k}`;
+      bb[fullKey] = v;
+      keys_updated.push(fullKey);
+    }
+
+    // Also store metadata tracking ingestion timestamp and TTL for staleness detection
+    bb[`${prefix}._ingested_at`] = ingested_at;
+    bb[`${prefix}._ttl_ms`] = ttl_ms;
+    bb[`${prefix}._expires_at`] = expires_at;
+    keys_updated.push(`${prefix}._ingested_at`, `${prefix}._expires_at`);
+
+    db.prepare('UPDATE execution_state SET blackboard_json = ?, updated_at = ? WHERE id = ?').run(
+      safeJsonStringify(bb),
+      ingested_at,
+      params.execution_id
+    );
+
+    return {
+      success: true,
+      slice_type: params.slice_type,
+      keys_updated,
+      ingested_at,
+      ttl_ms,
+      expires_at,
+    };
+  }
+
+  static isSliceStale(
+    bb: Record<string, unknown>,
+    slice_type: 'spatial' | 'visual' | 'task' | 'vitals',
+    currentTimeMs?: number
+  ): boolean {
+    const expiresAt = bb[`${slice_type}._expires_at`] as string | undefined;
+    if (!expiresAt) return true;
+    const now = currentTimeMs ?? Date.now();
+    return new Date(expiresAt).getTime() < now;
   }
 }
