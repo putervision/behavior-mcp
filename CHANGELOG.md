@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-10-02
+
+### 🚀 Blackboard Slice Projections, Typed Spatial Conditions & 60Hz Outcome Spool
+- **Structured Blackboard Slices**: Added `manage_blackboard(action: 'ingest_slice')` with namespaced slice keys, ingestion timestamps, and configurable TTL-based staleness protection.
+- **Typed Spatial Conditions**: Added deterministic condition evaluators (`spatial_entity_near`, `affordance_check`, `threat_in_frustum`, `path_clear`) with fail-closed staleness checks against expired blackboard data.
+- **60Hz SQLite Outcome Spool**: Implemented non-blocking local SQLite spooling (`SpoolEngine`) for high-frequency tick actions and executions, preventing cross-server network latency bottlenecks during behavior loops.
+- **Spool Telemetry & Draining**: Added `get_metrics(action: 'spool')` and `get_metrics(action: 'drain_spool')` to batch-sync spooled outcomes to higher-level strategic reasoning off-tick.
+- **Manifest Synchronization**: Synchronized package manifests, bumped version to 0.4.0, and updated tool documentation.
+
 ## [0.3.1] - 2026-09-28
 
 ### 🛠️ Glama TDQS Optimizations & MCP Annotations
