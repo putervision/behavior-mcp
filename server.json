@@ -3,7 +3,7 @@
   "name": "io.github.putervision/behavior-mcp",
   "version": "0.4.0",
   "title": "Behavior Runtime MCP",
-  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers, blackboard projection, and safety guardrails.",
+  "description": "In-browser ~60Hz behavior tree execution engine with reactive triggers and blackboard projection.",
   "publisher": "PuterVision",
   "license": "MIT",
   "websiteUrl": "https://behaviormcp.com",
