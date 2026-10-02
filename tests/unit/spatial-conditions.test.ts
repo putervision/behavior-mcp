@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { ConditionRegistry } from '../../src/engine/browser/conditions.js';
-import { ExecutionContext, AffordanceBitmask } from '../../src/schema/types.js';
+import { AffordanceBitmask } from '../../src/schema/types.js';
+import { RuntimeContext } from '../../src/engine/browser/node-types.js';
 
 describe('Typed Spatial Conditions Suite', () => {
-  const mockContext = (blackboard: Record<string, unknown>): ExecutionContext => ({
+  const mockContext = (blackboard: Record<string, unknown>): RuntimeContext => ({
     blackboard,
     telemetry: {
       fps: 60,
@@ -11,8 +12,7 @@ describe('Typed Spatial Conditions Suite', () => {
       threat_level: 0,
       consecutive_failures: 0,
     },
-    tick_count: 10,
-    duration_ms: 166,
+    tick: 10,
   });
 
   const now = Date.now();
@@ -31,7 +31,12 @@ describe('Typed Spatial Conditions Suite', () => {
       const ctx = mockContext(
         freshBlackboard({
           'spatial.nearby_entities': [
-            { id: 'door_1', type: 'door', distance: 3.2, affordance_mask: AffordanceBitmask.INTERACTABLE },
+            {
+              id: 'door_1',
+              type: 'door',
+              distance: 3.2,
+              affordance_mask: AffordanceBitmask.INTERACTABLE,
+            },
           ],
         })
       );
@@ -47,7 +52,12 @@ describe('Typed Spatial Conditions Suite', () => {
       const ctx = mockContext(
         freshBlackboard({
           'spatial.nearby_entities': [
-            { id: 'door_1', type: 'door', distance: 8.5, affordance_mask: AffordanceBitmask.INTERACTABLE },
+            {
+              id: 'door_1',
+              type: 'door',
+              distance: 8.5,
+              affordance_mask: AffordanceBitmask.INTERACTABLE,
+            },
           ],
         })
       );
@@ -63,7 +73,12 @@ describe('Typed Spatial Conditions Suite', () => {
       const ctx = mockContext(
         staleBlackboard({
           'spatial.nearby_entities': [
-            { id: 'door_1', type: 'door', distance: 1.0, affordance_mask: AffordanceBitmask.INTERACTABLE },
+            {
+              id: 'door_1',
+              type: 'door',
+              distance: 1.0,
+              affordance_mask: AffordanceBitmask.INTERACTABLE,
+            },
           ],
         })
       );
@@ -152,7 +167,7 @@ describe('Typed Spatial Conditions Suite', () => {
         freshBlackboard({
           'vitals.threat_level': 0.1,
           'spatial.nearby_entities': [
-            { id: 'plant', type: 'vegetation', affordance_mask: AffordanceBitmask.DESTRUCTIBLE },
+            { id: 'plant', type: 'vegetation', affordance_mask: AffordanceBitmask.INTERACTABLE },
           ],
         })
       );

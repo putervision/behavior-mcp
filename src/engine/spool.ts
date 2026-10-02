@@ -49,13 +49,15 @@ export class SpoolEngine {
     const tick = entry.tick ?? 0;
     const paramsJson = safeJsonStringify(entry.parameters || {});
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO outcome_spool (
         id, project, behavior_name, execution_id, session_id,
         node_id, action_type, parameters_json, status,
         duration_ms, tick, synced, timestamp
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
-    `).run(
+    `
+    ).run(
       id,
       entry.project,
       entry.behavior_name,
@@ -143,7 +145,9 @@ export class SpoolEngine {
     }
   ): number {
     this.ensureTable(db);
-    const res = db.prepare('DELETE FROM outcome_spool WHERE project = ? AND synced = 1').run(params.project);
+    const res = db
+      .prepare('DELETE FROM outcome_spool WHERE project = ? AND synced = 1')
+      .run(params.project);
     return res.changes;
   }
 }

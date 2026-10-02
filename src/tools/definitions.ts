@@ -166,12 +166,16 @@ export const toolDefinitions: ToolDefinition[] = [
         action: {
           type: 'string',
           enum: ['current', 'history', 'aggregate', 'compare', 'spool', 'drain_spool'],
-          description: 'Metrics query mode: current, history, aggregate, compare, spool, drain_spool',
+          description:
+            'Metrics query mode: current, history, aggregate, compare, spool, drain_spool',
         },
         execution_id: { type: 'string', description: 'Filter metrics by execution ID' },
         behavior_name: { type: 'string', description: 'Filter metrics by behavior tree name' },
         limit: { type: 'number', description: 'Max records' },
-        unsynced_only: { type: 'boolean', description: 'Filter only unsynced spool entries (action: spool)' },
+        unsynced_only: {
+          type: 'boolean',
+          description: 'Filter only unsynced spool entries (action: spool)',
+        },
         trace_id: { type: 'string', description: 'Distributed trace ID' },
         project: { type: 'string', description: 'Target project slug' },
       },
@@ -240,7 +244,8 @@ export const toolDefinitions: ToolDefinition[] = [
         },
         payload: {
           type: 'object',
-          description: 'Key-value dictionary of slice data to project into blackboard (action: ingest_slice)',
+          description:
+            'Key-value dictionary of slice data to project into blackboard (action: ingest_slice)',
         },
         ttl_ms: {
           type: 'number',
