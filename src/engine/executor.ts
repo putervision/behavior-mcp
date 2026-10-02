@@ -6,6 +6,7 @@ import { safeJsonParse, safeJsonStringify } from '../utils/json-validator.js';
 import { NotFoundError } from '../utils/errors.js';
 import { BehaviorRegistry } from './behaviors.js';
 import { logRuntimeEvent } from './events.js';
+import { SpoolEngine } from './spool.js';
 
 export class ExecutionEngine {
   static startExecution(
@@ -151,6 +152,20 @@ export class ExecutionEngine {
       entity_type: 'execution',
       action: 'stop',
       details: { status: params.status, error: params.error_message },
+    });
+
+    // Spool outcome off-tick to local SQLite (§4)
+    SpoolEngine.spoolOutcome(db, {
+      project: params.project,
+      behavior_name: current.behavior_name,
+      execution_id: current.id,
+      session_id: current.session_id,
+      node_id: current.active_node_path || 'root',
+      action_type: 'execution_outcome',
+      parameters: safeJsonParse(current.blackboard_json, {}),
+      status: params.status,
+      duration_ms: current.duration_ms,
+      tick: current.current_tick,
     });
 
     return {

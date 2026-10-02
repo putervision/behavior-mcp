@@ -9,6 +9,7 @@ import { RecordingEngine } from '../engine/recordings.js';
 import { BlackboardEngine } from '../engine/blackboard.js';
 import { SnapshotEngine } from '../engine/snapshots.js';
 import { verifyEventChain } from '../engine/events.js';
+import { SpoolEngine } from '../engine/spool.js';
 import { SchemaAdvisor } from '../engine/advisor.js';
 import { ValidationError } from '../utils/errors.js';
 import { WatchdogTimer } from '../engine/watchdog.js';
@@ -266,7 +267,35 @@ export function registerAllTools(server: any): void {
           }
 
           case 'get_metrics': {
-            result = MetricsEngine.getMetrics(db, { project, ...args });
+            if (args.action === 'spool') {
+              const entries = SpoolEngine.getSpoolEntries(db, {
+                project,
+                unsynced_only: args.unsynced_only,
+                limit: args.limit,
+              });
+              result = {
+                action: 'spool',
+                total: entries.length,
+                entries,
+              };
+            } else if (args.action === 'drain_spool') {
+              const entries = SpoolEngine.getSpoolEntries(db, {
+                project,
+                unsynced_only: true,
+                limit: args.limit || 500,
+              });
+              const ids = entries.map((e) => e.id);
+              if (ids.length > 0) {
+                SpoolEngine.markSynced(db, { project, ids });
+              }
+              result = {
+                action: 'drain_spool',
+                drained_count: entries.length,
+                entries,
+              };
+            } else {
+              result = MetricsEngine.getMetrics(db, { project, ...args });
+            }
             break;
           }
 
@@ -366,9 +395,17 @@ export function registerAllTools(server: any): void {
                 duration_seconds: args.duration_seconds,
                 mode: args.mode,
               });
+            } else if (action === 'ingest_slice' && args.execution_id && args.payload) {
+              result = BlackboardEngine.ingestSlice(db, {
+                project,
+                execution_id: args.execution_id,
+                slice_type: args.slice_type || 'spatial',
+                payload: args.payload,
+                ttl_ms: args.ttl_ms,
+              });
             } else {
               throw new ValidationError(
-                `Unsupported manage_blackboard action or missing execution_id/key: "${action}". Supported actions: get, set, delete, lease, list.`
+                `Unsupported manage_blackboard action or missing execution_id/key: "${action}". Supported actions: get, set, delete, lease, list, ingest_slice.`
               );
             }
             break;
