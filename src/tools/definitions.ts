@@ -37,6 +37,25 @@ export const toolDefinitions: ToolDefinition[] = [
           description: 'Distributed trace ID for cross-server correlation',
         },
         client_request_id: { type: 'string', description: 'Idempotency key' },
+        dispatch_token: {
+          type: 'object',
+          description:
+            'Cryptographically signed dispatch token issued by agent-reasoning-mcp (gate_intention)',
+          properties: {
+            token_id: { type: 'string' },
+            intention_id: { type: 'string' },
+            behavior_name: { type: 'string' },
+            params_hash: { type: 'string' },
+            aud: { type: 'string' },
+            issued_at: { type: 'string' },
+            expires_at: { type: 'string' },
+            hmac_signature: { type: 'string' },
+          },
+        },
+        intention: {
+          type: 'object',
+          description: 'Optional linked intention payload matching the dispatch token',
+        },
         project: { type: 'string', description: 'Target project slug' },
       },
       required: ['action', 'behavior_name'],

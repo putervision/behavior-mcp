@@ -1,7 +1,7 @@
 # @putervision/behavior-mcp
 
 [![npm version](https://img.shields.io/npm/v/@putervision/behavior-mcp.svg)](https://www.npmjs.com/package/@putervision/behavior-mcp)
-[![version](https://img.shields.io/badge/version-0.4.0-blue.svg)](./CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-0.4.1-blue.svg)](./CHANGELOG.md)
 [![CI](https://github.com/putervision/behavior-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/putervision/behavior-mcp/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)

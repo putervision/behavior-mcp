@@ -18,6 +18,8 @@ import { PolicyGate } from '../engine/policy-gate.js';
 import { EmergencySafety } from '../engine/safety.js';
 import { StuckDetector } from '../engine/stuck-detector.js';
 import { z, Schema, ObjectSchema } from '../schema/schemas.js';
+import { verifyIntentionDispatch } from '../engine/browser/executor-bundle.js';
+import { logger } from '../utils/logger.js';
 
 const rateLimiter = new ActionRateLimiter(60);
 const policyGate = new PolicyGate();
@@ -123,6 +125,38 @@ export function registerAllTools(server: any): void {
               );
             }
             watchdog.feed();
+
+            // Intention & dispatch token validation
+            const hmacSecret = process.env.PENTAD_HMAC_SECRET;
+            const requireToken = process.env.BEHAVIOR_REQUIRE_DISPATCH_TOKEN === 'true';
+
+            if (hmacSecret || requireToken) {
+              if (!args.dispatch_token) {
+                throw new ValidationError(
+                  'Missing required dispatch_token for behavior execution (PENTAD_HMAC_SECRET configured or BEHAVIOR_REQUIRE_DISPATCH_TOKEN=true).'
+                );
+              }
+              const intention = args.intention || {
+                id: args.dispatch_token.intention_id,
+                behavior_name: args.behavior_name,
+                parameters: args.parameters || {},
+              };
+              const isValid = verifyIntentionDispatch(intention, args.dispatch_token, hmacSecret);
+              if (!isValid) {
+                throw new ValidationError(
+                  'Invalid, expired, or replayed dispatch_token for behavior execution.'
+                );
+              }
+            } else if (args.dispatch_token) {
+              const expiresAt = Date.parse(args.dispatch_token.expires_at);
+              if (!Number.isNaN(expiresAt) && Date.now() > expiresAt) {
+                throw new ValidationError('Expired dispatch_token provided.');
+              }
+            } else {
+              logger.warn(
+                'Executing behavior without cryptographic dispatch token verification (PENTAD_HMAC_SECRET unset).'
+              );
+            }
 
             result = ExecutionEngine.startExecution(db, { project, ...args });
             result._suggestions = [
