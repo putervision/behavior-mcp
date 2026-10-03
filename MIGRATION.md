@@ -1,6 +1,6 @@
 # 🚀 Migration Guide: @putervision/behavior-mcp
 
-This guide explains how to migrate client integrations, custom agents, and tool callers to the unified **v0.4.0+ API** with native transport, unified blackboard dialect, dynamic behavior synthesis, and spatial blackboard slice projection.
+This guide explains how to migrate client integrations, custom agents, and tool callers to the unified **v0.4.1+ API** with native transport, unified blackboard dialect, dynamic behavior synthesis, and spatial blackboard slice projection.
 
 ---
 

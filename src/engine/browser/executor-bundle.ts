@@ -5,8 +5,24 @@ import { GameConditionRegistry } from './conditions-game.js';
 import { ActionRegistry } from './actions.js';
 import { GameActionRegistry } from './actions-game.js';
 
+import { canonicalJsonStringify } from '../../utils/canonical-json.js';
+
 const MAX_TREE_DEPTH = 64;
 const CLOCK_SKEW_MS = 2000;
+
+const usedTokenIds = new Map<string, number>();
+
+export function clearUsedTokensForTest(): void {
+  usedTokenIds.clear();
+}
+
+function pruneExpiredTokens(now: number): void {
+  for (const [id, exp] of usedTokenIds.entries()) {
+    if (now > exp + CLOCK_SKEW_MS) {
+      usedTokenIds.delete(id);
+    }
+  }
+}
 
 export function verifyIntentionDispatch(
   intention: { id: string; behavior_name?: string; parameters?: Record<string, unknown> },
@@ -26,6 +42,19 @@ export function verifyIntentionDispatch(
   if (now > expiresAt + CLOCK_SKEW_MS) return false;
   if (now < issuedAt - CLOCK_SKEW_MS) return false;
   if (token.intention_id !== intention.id) return false;
+  if (intention.behavior_name && token.behavior_name !== intention.behavior_name) return false;
+
+  // Validate params_hash against intention parameters
+  const actionParams = intention.parameters || {};
+  const computedHash = crypto
+    .createHash('sha256')
+    .update(canonicalJsonStringify(actionParams), 'utf8')
+    .digest('hex');
+  if (token.params_hash !== computedHash) return false;
+
+  // Anti-replay check
+  pruneExpiredTokens(now);
+  if (usedTokenIds.has(token.token_id)) return false;
 
   const expectedSig = crypto
     .createHmac('sha256', effectiveSecret)
@@ -39,7 +68,11 @@ export function verifyIntentionDispatch(
 
   // Verify buffer lengths before calling crypto.timingSafeEqual() to avoid RangeError on tampered tokens
   if (sigBuf.length !== expectedBuf.length || sigBuf.length === 0) return false;
-  return crypto.timingSafeEqual(sigBuf, expectedBuf);
+  if (!crypto.timingSafeEqual(sigBuf, expectedBuf)) return false;
+
+  // Mark token as used to prevent replay
+  usedTokenIds.set(token.token_id, expiresAt);
+  return true;
 }
 
 export class BehaviorTreeEvaluator {

@@ -3,6 +3,17 @@ dist
 coverage
 *.tsbuildinfo
 .env
+.env.*
+!.env.example
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+viewer*.html
+scratch*
+.behavior-mcp.json
+.behavior-runtime-mcp.json
+.agent-reasoning-mcp.json
 
 .state-memory-mcp
 .vision-memory-mcp
@@ -10,3 +21,4 @@ coverage
 .behavior-mcp
 .behavior-runtime-mcp
 .agent-reasoning-mcp
+

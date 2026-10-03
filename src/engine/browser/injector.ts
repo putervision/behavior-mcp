@@ -20,12 +20,12 @@ export class BrowserInjector {
    * Generates the browser evaluation script injecting the ~60Hz Behavior Tree runtime,
    * safety rate limiters, and the PuterVision Game Telemetry Bridge.
    */
-  static getInjectionScript(tree: BehaviorTreeNode, allowlistOrigins: string[] = ['*']): string {
+  static getInjectionScript(tree: BehaviorTreeNode, allowlistOrigins: string[] = []): string {
     return `
       (function() {
         const allowed = ${JSON.stringify(allowlistOrigins)};
         const origin = window.location.origin;
-        if (!allowed.includes('*') && !allowed.includes(origin)) {
+        if (allowed.length > 0 && !allowed.includes('*') && !allowed.includes(origin)) {
           console.warn('[BEHAVIOR_RUNTIME] Origin rejected: ' + origin);
           return;
         }
@@ -65,7 +65,7 @@ export class BrowserInjector {
           }
         });
 
-        console.log('[BEHAVIOR_RUNTIME] Injected behavior runtime & PuterVision telemetry bridge for tree: ' + '${tree.id || "root"}');
+        console.log('[BEHAVIOR_RUNTIME] Injected behavior runtime & PuterVision telemetry bridge for tree: ' + ${JSON.stringify(tree.id || 'root')});
       })();
     `;
   }

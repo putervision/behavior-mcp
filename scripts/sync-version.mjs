@@ -280,22 +280,31 @@ updateFileContent('docs/game-demo.html', (content) => {
 
 // 13. MIGRATION.md
 updateFileContent('MIGRATION.md', (content) => {
-  return content.replace(/\*\*v[0-9]+\.[0-9]+\.[0-9]+\+ API\*\*/g, `**v${targetVersion}+ API**`);
+  let updated = content;
+  updated = updated.replace(/\*\*v[0-9]+\.[0-9]+\.[0-9]+\+ API\*\*/g, `**v${targetVersion}+ API**`);
+  updated = updated.replace(/## ⚡️ Migrating to v[0-9]+\.[0-9]+\.[0-9]+\+/g, `## ⚡️ Migrating to v${targetVersion}+`);
+  updated = updated.replace(/`v[0-9]+\.[0-9]+\.[0-9]+` introduces/g, `\`v${targetVersion}\` introduces`);
+  return updated;
 });
 
-// 14. Scan all docs/**/*.md for version badges
+// 14. Scan all docs/**/*.md for version badges and package tags
 const docsDir = path.join(PROJECT_ROOT, 'docs');
 if (fs.existsSync(docsDir)) {
   const scanDocs = (dir) => {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
       const full = path.join(dir, entry.name);
-      if (entry.isDirectory() && entry.name !== '.state-memory-mcp') {
+      if (entry.isDirectory() && !entry.name.startsWith('.')) {
         scanDocs(full);
       } else if (entry.isFile() && entry.name.endsWith('.md')) {
         const rel = path.relative(PROJECT_ROOT, full);
         updateFileContent(rel, (content) => {
-          return content.replace(/badge\/version-[0-9]+\.[0-9]+\.[0-9]+[^ -]*-/g, `badge/version-${targetVersion}-`);
+          let updated = content.replace(/badge\/version-[0-9]+\.[0-9]+\.[0-9]+[^ -]*-/g, `badge/version-${targetVersion}-`);
+          updated = updated.replace(
+            new RegExp(`(${pkg.name.replace('/', '\\/')})@[0-9]+\\.[0-9]+\\.[0-9]+`, 'g'),
+            `$1@${targetVersion}`
+          );
+          return updated;
         });
       }
     }

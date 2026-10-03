@@ -121,7 +121,10 @@ describe('Behavior-MCP Engine & Handlers Coverage Boost', () => {
     expect(canonicalJsonStringify({ a: undefined, b: 2 })).toBe('{"b":2}');
     expect(() => canonicalJsonStringify(Infinity)).toThrow('Invalid non-finite number');
 
-    expect(getVersion()).toBe('0.4.0');
+    const pkg = JSON.parse(
+      fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf-8')
+    );
+    expect(getVersion()).toBe(pkg.version);
     (globalThis as any).__APP_VERSION__ = '1.0.9';
     expect(getVersion()).toBe('1.0.9');
     delete (globalThis as any).__APP_VERSION__;

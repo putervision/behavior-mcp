@@ -205,6 +205,9 @@ export class RecordSchema<V> extends Schema<Record<string, V>> {
     }
     const result: Record<string, V> = {};
     for (const [key, propVal] of Object.entries(val as Record<string, unknown>)) {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+        continue;
+      }
       result[key] = this.valSchema.parse(propVal, `${path}.${key}`);
     }
     return result;

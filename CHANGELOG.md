@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-10-03
+
+### 🛡️ Security Hardening & Dispatch Token Enforcement
+- **Dispatch Token Enforcement**: Wired HMAC intention dispatch token verification into `load_behavior` with canonical `params_hash` re-computation and behavior name matching.
+- **Token Replay Protection**: Added in-memory token cache with TTL expiration to prevent token replay attacks.
+- **Browser Injector Sandboxing**: Hardened runtime injection script generation against script breakout via unescaped identifiers, and restricted default origin allowlists.
+- **Schema & Policy Protection**: Added prototype key filtering (`__proto__`, `constructor`, `prototype`) in `RecordSchema` to prevent prototype pollution during dictionary validation.
+- **Documentation & Manifest Alignment**: Updated security policy contact domains and synchronized package metadata across documentation and schemas.
+
 ## [0.4.0] - 2026-10-02
 
 ### 🚀 Blackboard Slice Projections, Typed Spatial Conditions & 60Hz Outcome Spool
